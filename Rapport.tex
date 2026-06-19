@@ -1,0 +1,721 @@
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=2.8cm, right=2.8cm}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{cite}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage{amsopn}
+
+\onehalfspacing
+
+% En-têtes
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small TER — Master Informatique 1\textsuperscript{ère} année}
+\lhead{\small TOUHAF Aya — LISIC / ULCO}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Formatage sections
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.6em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{0.5em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection.}{0.5em}{}
+
+% Listings Python
+\lstset{
+  language=Python,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\color{blue!70},
+  commentstyle=\color{gray},
+  stringstyle=\color{orange!80!black},
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{gray!40},
+  backgroundcolor=\color{gray!5},
+  numbers=left, numberstyle=\tiny\color{gray},
+  xleftmargin=1.5em,
+}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=green!50!black,
+  urlcolor=blue!70,
+}
+
+\begin{document}
+
+% PAGE DE TITRE
+\begin{titlepage}
+\centering
+\vspace*{1cm}
+
+{\Large\textsc{Université du Littoral Côte d'Opale}}\\[0.3cm]
+{\large Laboratoire d'Informatique Signal et Image de la Côte d'Opale (LISIC)}\\[0.2cm]
+{\normalsize Master Informatique — 1\textsuperscript{ère} année}
+
+\vspace{1.5cm}
+\rule{\linewidth}{0.8pt}\\[0.4cm]
+{\LARGE\bfseries Vers une Intelligence Artificielle Explicable\\[0.2cm]
+pour la Surveillance de l'État Physiologique\\[0.2cm]
+de l'Athlète de Haut Niveau}\\[0.3cm]
+{\large\itshape Espace d'État Fonctionnel, Graphes de Connaissances\\
+et Cohérence Sémantique}\\[0.2cm]
+\rule{\linewidth}{0.8pt}
+
+\vspace{1.2cm}
+{\large Travail d'Étude et de Recherche — 2025--2026}
+
+\vspace{1.5cm}
+\begin{tabular}{ll}
+\textbf & TOUHAF Aya \\[0.2cm]
+                    & \texttt{aya.touhaf@univ-littoral.fr} \\[0.2cm]
+\textbf{Encadrant}  & Dr.~Adeel Ahmad \\
+                    & \texttt{adeel.ahmad@univ-littoral.fr} \\[0.2cm]
+\textbf{Laboratoire} & LISIC — Université du Littoral Côte d'Opale \\[0.2cm]
+\textbf{Période}    & Juin -- Juillet 2026 \\
+\end{tabular}
+
+\vfill
+{\small Rapport de Travail d'Étude et de Recherche — Session 2025--2026}
+\end{titlepage}
+
+% RÉSUMÉ
+\begin{abstract}
+Ce rapport présente les travaux réalisés dans le cadre du TER de Master
+Informatique première année, portant sur l'explicabilité des modèles
+d'intelligence artificielle appliquée à la surveillance physiologique
+d'athlètes de haut niveau équipés de capteurs portables. Face à l'opacité
+des modèles d'apprentissage automatique, nous proposons un cadre combinant
+un Espace d'État Fonctionnel (FSS), un graphe de connaissances sémantiques
+construit automatiquement à partir des valeurs SHAP, et un module de
+vérification de cohérence entre les décisions du modèle et le raisonnement
+symbolique.
+
+Les expérimentations ont été conduites sur la base SportDB~2.0, en retenant
+dix sujets pratiquant la course à pied. Un classifieur Random Forest est
+entraîné sur 3\,267 fenêtres temporelles extraites de signaux
+cardio-respiratoires : fréquence cardiaque, fréquence respiratoire et
+intervalles RR. L'évaluation par leave-one-subject-out révèle une précision
+moyenne de 54\,\%, ce qui met en évidence la variabilité inter-individuelle
+des données physiologiques. Le score de cohérence IA--graphe de connaissances
+atteint en moyenne 0,82, avec 69,4\,\% des prédictions parfaitement validées
+par le raisonnement symbolique.
+
+Ces résultats montrent qu'il est possible de relier les prédictions du
+modèle à une représentation sémantique cohérente des états physiologiques
+observés.
+
+\medskip
+\noindent\textbf{Mots-clés :} Explainable AI, XAI, SHAP, Espace d'État
+Fonctionnel, Graphe de Connaissances, Random Forest, Wearables, SportDB.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+
+\section{Introduction}
+\label{sec:intro}
+
+La surveillance en temps réel de l'état physiologique des sportifs de haut
+niveau constitue un enjeu important, aussi bien pour la performance que pour
+la prévention des blessures. Les dispositifs portables modernes, comme les
+montres connectées, les ceintures cardiaques ou les capteurs
+cardio-respiratoires, permettent aujourd'hui de collecter en continu des
+données biométriques pendant l'entraînement ou la compétition. Bien
+analysées, ces données peuvent aider à mieux comprendre l'état d'un athlète,
+à repérer des phases de fatigue ou à suivre sa récupération.
+
+L'apprentissage automatique offre des outils intéressants pour exploiter ces
+signaux. Cependant, les modèles prédictifs restent souvent difficiles à
+interpréter. Dans un contexte sportif, cette limite est importante : un
+entraîneur, un préparateur physique ou un médecin du sport ne peut pas se
+contenter d'une prédiction brute. Il doit aussi comprendre pourquoi le
+système propose une certaine interprétation de l'état de l'athlète.
+
+Cette problématique rejoint le domaine de l'intelligence artificielle
+explicable (XAI), dont l'objectif est de rendre les décisions des modèles
+plus compréhensibles et plus auditables. Dans des domaines où les décisions
+ont un impact humain, comme la santé, le sport ou la sécurité, la capacité à
+justifier une recommandation devient presque aussi importante que la
+performance du modèle. Cette question est également en lien avec le cadre
+réglementaire européen, notamment le Règlement européen sur l'intelligence
+artificielle, ou \textit{AI Act}, qui insiste sur la transparence et la
+traçabilité des systèmes d'IA à risque élevé~\cite{aiact}.
+
+Les travaux présentés dans ce rapport s'inscrivent dans cette direction.
+L'objectif est de construire une première preuve de concept combinant trois
+aspects : la modélisation des états physiologiques sous forme d'un espace
+d'état fonctionnel, l'extraction d'explications depuis un modèle
+d'apprentissage automatique, et la vérification de la cohérence entre ces
+explications et une représentation sémantique du domaine.
+
+Ce rapport est organisé comme suit. La section~\ref{sec:etat_art} présente
+les principaux éléments liés à l'IA explicable, aux espaces d'état et aux
+graphes de connaissances. La section~\ref{sec:methodo} décrit la
+méthodologie proposée. La section~\ref{sec:donnees} présente le jeu de
+données et le protocole expérimental. Les résultats sont analysés dans la
+section~\ref{sec:resultats}, avant une discussion critique et les
+perspectives de poursuite du travail.
+
+\section{État de l'art}
+\label{sec:etat_art}
+
+\subsection{Intelligence artificielle explicable}
+
+La montée en puissance des modèles d'apprentissage automatique a permis
+d'obtenir de bonnes performances dans de nombreux domaines, mais elle a aussi
+renforcé le problème de l'opacité des modèles. Linardatos et al.~\cite{linardatos2020}
+distinguent deux grandes familles de méthodes d'explicabilité : les méthodes
+post-hoc, qui expliquent un modèle déjà entraîné, et les modèles
+intrinsèquement interprétables, qui sont lisibles par construction.
+
+Parmi les méthodes post-hoc, LIME~\cite{ribeiro2016} propose d'approximer
+localement le comportement d'un modèle complexe par un modèle simple autour
+d'une prédiction donnée. Cette approche est intéressante, car elle peut être
+utilisée avec différents types de modèles, mais elle peut être sensible aux
+paramètres choisis pour générer les perturbations locales.
+
+SHAP~\cite{lundberg2017} repose sur une base théorique plus stable, issue de
+la théorie des jeux coopératifs. L'idée est d'attribuer à chaque variable une
+contribution dans la prédiction finale. Pour les modèles à base d'arbres,
+TreeSHAP~\cite{lundberg2020} permet de calculer ces contributions de façon
+efficace. Dans notre travail, SHAP est donc utilisé pour identifier les
+variables physiologiques qui influencent le plus les décisions du modèle.
+
+\subsection{Espaces d'état fonctionnels}
+
+La notion d'espace d'état fonctionnel consiste à représenter un système par
+un ensemble d'états distincts et par des transitions possibles entre ces
+états. Dans notre cas, le système étudié est l'état physiologique de
+l'athlète pendant l'effort. Cette représentation est utile, car elle permet
+de passer d'une simple prédiction de classe à une lecture plus dynamique du
+comportement physiologique.
+
+Pour le protocole RUN, les états suivent naturellement la progression de la
+séance : repos, démarrage de l'effort, effort intense, effort soutenu, charge
+maximale et récupération. Cette représentation est proche de l'idée des
+modèles de transition, où l'état courant du système influence l'état suivant.
+
+\subsection{Graphes de connaissances}
+
+Les graphes de connaissances représentent des concepts et leurs relations
+sous forme de nœuds et d'arêtes~\cite{hogan2021}. Ils sont souvent utilisés
+pour structurer des connaissances métier et faciliter le raisonnement
+symbolique. Dans le domaine médical, Rotmensch et al.~\cite{rotmensch2017}
+ont montré qu'il était possible de construire des graphes de connaissances à
+partir de données cliniques.
+
+Dans notre cas, le graphe ne sert pas seulement à représenter des concepts
+physiologiques. Il sert aussi à relier les variables importantes du modèle
+aux états fonctionnels. L'objectif est de vérifier si la décision du modèle
+est cohérente avec une lecture sémantique du domaine.
+
+
+\section{Méthodologie}
+\label{sec:methodo}
+
+
+\subsection{Architecture générale}
+
+L'architecture développée dans ce travail repose sur une chaîne complète
+allant des signaux physiologiques jusqu'à l'explication de la décision. Elle
+comprend cinq étapes principales :
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item extraction de fenêtres temporelles à partir des signaux HR, BR et RR ;
+  \item calcul de variables statistiques sur chaque fenêtre ;
+  \item entraînement d'un classifieur Random Forest ;
+  \item calcul des explications SHAP et extraction de règles ;
+  \item construction d'un graphe de connaissances et calcul d'un score de
+        cohérence.
+\end{enumerate}
+
+L'originalité de cette approche est que le graphe de connaissances n'est pas
+construit uniquement à la main. Il est enrichi automatiquement à partir des
+explications produites par SHAP. Ainsi, les liens entre variables
+physiologiques et états fonctionnels reflètent ce que le modèle apprend dans
+les données.
+
+\subsection{Espace d'état fonctionnel}
+
+L'espace d'état fonctionnel est défini à partir du protocole d'exercice
+renseigné dans les fichiers \texttt{TrNote.txt}. Pour le sous-ensemble RUN,
+six états sont retenus :
+
+\begin{itemize}[leftmargin=1.5em, itemsep=0pt]
+  \item $S_0$ — \textit{Resting} : phase de repos avant l'effort ;
+  \item $S_1$ — \textit{Effort Initiation} : début de l'effort ;
+  \item $S_2$ — \textit{Intense Effort} : effort intense ;
+  \item $S_3$ — \textit{Sustained Effort} : effort soutenu ;
+  \item $S_4$ — \textit{Peak Load} : charge physiologique maximale ;
+  \item $S_5$ — \textit{Recovery} : récupération après l'effort.
+\end{itemize}
+
+Les transitions suivent la progression temporelle du protocole :
+
+\[
+S_0 \rightarrow S_1 \rightarrow S_2 \rightarrow S_3 \rightarrow S_4 \rightarrow S_5
+\]
+
+Cette formalisation permet d'interpréter les erreurs du modèle. Par exemple,
+une confusion entre $S_2$ et $S_3$ est moins problématique qu'une confusion
+entre $S_0$ et $S_4$, car $S_2$ et $S_3$ sont deux états voisins dans la
+dynamique de l'effort.
+
+\subsection{Extraction de features par fenêtre glissante}
+\label{subsec:features}
+
+Les signaux HR, BR et RR sont segmentés en fenêtres temporelles. Dans ce
+travail, une fenêtre de 20 échantillons est utilisée, avec un pas de 10
+échantillons. Cela crée un chevauchement de 50\,\%, ce qui permet de garder
+une continuité dans l'analyse du signal.
+
+Pour chaque fenêtre, neuf variables statistiques sont calculées :
+
+\begin{equation}
+\mathbf{x} = \bigl[\mu_{HR},\,\sigma_{HR},\,\max_{HR},\;
+              \mu_{BR},\,\sigma_{BR},\,\max_{BR},\;
+              \mu_{RR},\,\sigma_{RR},\,\min_{RR}\bigr]
+\end{equation}
+
+Ces variables résument l'activité cardiaque, respiratoire et la variation
+des intervalles RR sur une courte période. Les fenêtres contenant des
+valeurs manquantes ou non finies sont supprimées avant l'entraînement.
+
+\subsection{Modèle de classification}
+
+Le modèle utilisé est une Random Forest~\cite{breiman2001}. Ce choix est
+adapté à une première preuve de concept, car ce modèle fonctionne bien sur
+des données tabulaires, reste robuste avec peu de variables, et permet
+d'utiliser facilement TreeSHAP pour l'explicabilité.
+
+Les hyperparamètres utilisés sont les suivants : 200 arbres, une profondeur
+maximale de 8, un minimum de 3 échantillons par feuille, et une pondération
+des classes pour limiter l'effet du déséquilibre entre états.
+
+\subsection{Construction du graphe de connaissances}
+
+Le graphe de connaissances contient trois types de nœuds :
+
+\begin{itemize}
+  \item les états fonctionnels $S_0$ à $S_5$ ;
+  \item les indicateurs physiologiques : HR, BR et RR ;
+  \item les concepts sémantiques : réponse cardiorespiratoire, charge
+        physiologique, risque de fatigue et récupération.
+\end{itemize}
+
+Les liens entre variables physiologiques et états sont construits à partir
+des valeurs SHAP. Pour chaque classe, on calcule l'importance moyenne des
+features, puis on relie l'état au type de signal dominant.
+
+\begin{equation}
+\text{shap\_matrix}[c,\, j]
+  = \frac{1}{|W|} \sum_{w \in W} \left|\phi_j^{(c)}(w)\right|
+\end{equation}
+
+où $\phi_j^{(c)}(w)$ représente la valeur SHAP de la feature $j$ pour la
+fenêtre $w$ et la classe $c$.
+
+\subsection{Score de cohérence IA--KG}
+
+Pour chaque fenêtre, on compare la prédiction du modèle avec l'inférence
+obtenue par les règles extraites automatiquement des arbres. Le score de
+cohérence est défini ainsi :
+
+\begin{equation}
+\text{CS}(\hat{y}_{\text{IA}},\,\hat{y}_{\text{KG}}) =
+\begin{cases}
+1{,}0 & \text{si } \hat{y}_{\text{IA}} = \hat{y}_{\text{KG}} \\
+0{,}7 & \text{si les deux états sont voisins} \\
+0{,}4 & \text{si les deux états sont séparés par deux transitions} \\
+0{,}0 & \text{sinon}
+\end{cases}
+\end{equation}
+
+Ce choix tient compte de la structure du FSS. Une erreur entre deux états
+voisins n'a pas le même sens qu'une incohérence complète entre deux états
+éloignés.
+
+
+\section{Données et protocole expérimental}
+\label{sec:donnees}
+
+
+\subsection{Dataset SportDB 2.0}
+
+Le jeu de données utilisé est SportDB~2.0~\cite{sportdb2}. Il contient des
+enregistrements physiologiques collectés sur 130 sujets pendant la pratique
+de 11 sports. Les signaux ont été acquis avec différents capteurs portables,
+notamment BioHarness, Polar et KardiaMobile.
+
+Dans ce travail, nous avons choisi le sous-ensemble \textbf{RUN}, car il
+présente un protocole structuré et comparable entre les sujets. Les dix
+sujets disponibles, de S1 à S10, ont été utilisés.
+
+\begin{table}[H]
+\centering
+\caption{Caractéristiques du dataset après prétraitement.}
+\label{tab:dataset}
+\begin{tabular}{lc}
+\toprule
+\textbf{Paramètre} & \textbf{Valeur} \\
+\midrule
+Nombre de sujets             & 10 \\
+Nombre de fenêtres totales   & 3\,267 \\
+Taille de fenêtre            & 20 échantillons \\
+Pas de glissement            & 10 échantillons \\
+Nombre de features           & 9 \\
+Nombre de classes            & 6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Répartition des fenêtres par état}
+
+La répartition des fenêtres n'est pas parfaitement équilibrée, car les
+phases du protocole n'ont pas toutes la même durée.
+
+\begin{table}[H]
+\centering
+\caption{Nombre de fenêtres par état FSS.}
+\label{tab:windows}
+\begin{tabular}{lcc}
+\toprule
+\textbf{État} & \textbf{Fenêtres} & \textbf{\%} \\
+\midrule
+$S_0$ — Resting           & 617  & 18,9\,\% \\
+$S_1$ — Effort Initiation & 334  & 10,2\,\% \\
+$S_2$ — Intense Effort    & 554  & 17,0\,\% \\
+$S_3$ — Sustained Effort  & 390  & 11,9\,\% \\
+$S_4$ — Peak Load         & 754  & 23,1\,\% \\
+$S_5$ — Recovery          & 618  & 18,9\,\% \\
+\midrule
+\textbf{Total}            & \textbf{3\,267} & \textbf{100\,\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Protocole de validation}
+
+Deux protocoles de validation ont été utilisés. La validation croisée
+stratifiée en 5 plis donne une estimation de la performance lorsque les
+données sont mélangées entre sujets. Le protocole leave-one-subject-out
+(LOSO) est plus exigeant : à chaque itération, toutes les fenêtres d'un
+sujet sont retirées de l'entraînement et utilisées pour le test. Ce type de
+validation est particulièrement adapté aux données physiologiques et à la
+reconnaissance d'activités humaines, car il permet d'évaluer la capacité
+d'un modèle à généraliser à des individus jamais observés pendant
+l'entraînement~\cite{loso_cv}.
+
+
+\section{Résultats}
+\label{sec:resultats}
+
+
+\subsection{Performance du classifieur}
+
+\subsubsection{Matrice de confusion}
+
+La figure~\ref{fig:confusion} présente la matrice de confusion obtenue. Les
+états $S_0$ et $S_5$ sont bien reconnus, car ils correspondent à des profils
+physiologiques assez distincts. Les principales confusions apparaissent
+entre $S_2$, $S_3$ et $S_4$, ce qui est cohérent avec la proximité de ces
+phases dans le déroulement de l'effort.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.78\linewidth]{SportDB2/RUN/outputs/1_confusion_matrix}
+  \caption{Matrice de confusion du classifieur Random Forest.}
+  \label{fig:confusion}
+\end{figure}
+
+\subsubsection{Validation croisée et généralisation}
+
+\begin{table}[H]
+\centering
+\caption{Résultats de validation du classifieur.}
+\label{tab:scores}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Protocole} & \textbf{Accuracy moyenne} & \textbf{Écart-type} \\
+\midrule
+Cross-validation 5-fold & 0{,}717 & \pm 0{,}022 \\
+Leave-One-Subject-Out   & 0{,}540 & \pm 0{,}103 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+L'écart entre la validation croisée et le LOSO montre que le modèle apprend
+correctement les états dans l'ensemble des données, mais que la
+généralisation à un sujet jamais vu reste plus difficile. Ce résultat est
+attendu dans des données physiologiques, car deux athlètes peuvent présenter
+des réponses cardio-respiratoires différentes pour un effort similaire.
+
+\subsection{Analyse SHAP}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\linewidth]{SportDB2/RUN/outputs/2_shap_summary}
+  \caption{Résumé des valeurs SHAP par classe.}
+  \label{fig:shap_summary}
+\end{figure}
+
+La figure~\ref{fig:shap_summary} montre que les variables liées à la
+fréquence cardiaque, en particulier \texttt{max\_HR} et \texttt{mean\_HR},
+sont les plus importantes. Les variables liées aux intervalles RR jouent
+également un rôle important. Ce résultat est cohérent : quand l'intensité
+de l'effort augmente, la fréquence cardiaque augmente et les intervalles RR
+diminuent.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{SportDB2/RUN/outputs/4_feature_importance}
+  \caption{Comparaison des importances MDI et SHAP.}
+  \label{fig:feature_importance}
+\end{figure}
+
+La comparaison entre MDI et SHAP confirme que les variables cardiaques
+dominent la décision du modèle. Le fait que deux méthodes différentes
+mettent en avant les mêmes variables renforce la confiance dans
+l'interprétation.
+
+\subsection{Graphe de connaissances}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{SportDB2/RUN/outputs/3_knowledge_graph}
+  \caption{Graphe de connaissances construit à partir des valeurs SHAP.}
+  \label{fig:kg}
+\end{figure}
+
+Le graphe obtenu relie les signaux physiologiques aux états fonctionnels et
+aux concepts sémantiques. Les liens verts représentent les correspondances
+dérivées de SHAP. On retrouve notamment le rôle central de la fréquence
+cardiaque dans les états d'effort, ainsi que le rôle des intervalles RR dans
+la distinction entre repos et effort.
+
+\subsection{Cohérence IA--Knowledge Graph}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{SportDB2/RUN/outputs/5_loso_and_consistency}
+  \caption{Accuracy LOSO par sujet et cohérence IA--KG par état.}
+  \label{fig:loso_consistency}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{SportDB2/RUN/outputs/6_consistency_and_top_features}
+  \caption{Distribution du score de cohérence et feature dominante par état.}
+  \label{fig:consistency_distribution}
+\end{figure}
+
+Le score de cohérence moyen est de \textbf{0,82}. Sur les 3\,267 fenêtres,
+69,4\,\% sont parfaitement cohérentes avec le raisonnement symbolique,
+24,7\,\% sont partiellement cohérentes, et 5,9\,\% sont incohérentes. Ce
+résultat montre que la majorité des décisions du modèle peuvent être reliées
+à une explication compatible avec le graphe de connaissances.
+
+\begin{table}[H]
+\centering
+\caption{Score de cohérence IA--KG par état FSS.}
+\label{tab:consistency_state}
+\begin{tabular}{lcc}
+\toprule
+\textbf{État} & \textbf{Score moyen} & \textbf{Interprétation} \\
+\midrule
+$S_0$ — Resting           & 0,851 & Bon \\
+$S_1$ — Effort Initiation & 0,674 & Modéré \\
+$S_2$ — Intense Effort    & 0,842 & Bon \\
+$S_3$ — Sustained Effort  & 0,834 & Bon \\
+$S_4$ — Peak Load         & 0,736 & Acceptable \\
+$S_5$ — Recovery          & 0,936 & Excellent \\
+\midrule
+\textbf{Moyenne}          & \textbf{0,819} & Bon \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Exemple d'explication générée}
+
+Le système produit également une explication textuelle pour chaque fenêtre.
+Un exemple typique est le suivant :
+
+\begin{quote}
+\textit{Le modèle prédit l'état $S_0$ avec une confiance élevée. La variable
+la plus contributive est \texttt{mean\_HR}. L'inférence par règles conclut
+également à $S_0$. Le score de cohérence est donc égal à 1,0.}
+\end{quote}
+
+Ce type d'explication permet de relier une décision numérique à une lecture
+plus compréhensible de l'état physiologique.
+
+
+\section{Discussion}
+\label{sec:discussion}
+
+
+\subsection{Apports du travail}
+
+Ce travail a permis de construire un premier prototype complet répondant aux
+trois axes du sujet : formalisation d'un espace d'état fonctionnel,
+extraction d'explications et de règles, puis évaluation de la cohérence avec
+un graphe de connaissances.
+
+Le point le plus intéressant est que le graphe est enrichi à partir des
+explications SHAP. Cela évite de construire toutes les relations à la main
+et permet de garder un lien direct entre ce que le modèle apprend et la
+représentation sémantique utilisée pour l'explication.
+
+\subsection{Limites}
+
+La principale limite est que cette première version utilise seulement le
+sous-ensemble RUN de SportDB~2.0. Le nombre de sujets reste donc limité, et
+le modèle n'est pas encore généralisé à d'autres sports. De plus, le Random
+Forest travaille sur des features statistiques extraites de fenêtres, mais
+ne modélise pas directement la dynamique temporelle complète des signaux.
+
+Une autre limite concerne les règles extraites. Elles donnent une
+approximation lisible du comportement du modèle, mais elles ne doivent pas
+être interprétées comme des règles médicales ou physiologiques validées par
+des experts.
+
+\subsection{Lien avec l'explicabilité réglementaire}
+
+Le score de cohérence proposé peut être vu comme une première manière de
+documenter la relation entre décision automatique et raisonnement
+symbolique. Cette idée rejoint les exigences de transparence et de
+traçabilité mises en avant dans l'AI Act~\cite{aiact}. Même si le système
+développé ici reste un prototype de recherche, cette direction semble
+pertinente pour des applications futures dans des contextes sensibles.
+
+
+\section{Conclusion et perspectives}
+\label{sec:conclusion}
+
+
+Ce TER a permis de développer une première architecture d'IA explicable pour
+le suivi physiologique d'athlètes. Le système combine un espace d'état
+fonctionnel, un modèle Random Forest, des explications SHAP, des règles
+extraites automatiquement, un graphe de connaissances et un score de
+cohérence IA--KG.
+
+Les résultats obtenus sur le sous-ensemble RUN de SportDB~2.0 sont
+encourageants. La performance LOSO moyenne de 54\,\% montre que la
+généralisation inter-sujets reste difficile, mais le score de cohérence
+moyen de 0,82 montre que les décisions du modèle peuvent souvent être
+expliquées de manière compatible avec le graphe sémantique.
+
+La prochaine étape consistera à étendre cette approche au dataset SportDB~2.0
+complet, afin de tester la méthode sur plusieurs sports. Une autre
+perspective importante est le passage à des modèles de deep learning
+séquentiels, comme les CNN, LSTM ou modèles avec attention, capables
+d'exploiter directement la dynamique temporelle des signaux.
+
+\bigskip
+\noindent\textbf{Remerciements.} Je remercie le Dr.~Adeel Ahmad pour son
+encadrement, sa disponibilité et ses retours tout au long de ce projet.
+
+\bibliographystyle{plain}
+\begin{thebibliography}{99}
+
+\bibitem{linardatos2020}
+P.~Linardatos, V.~Papastefanopoulos, and S.~Kotsiantis.
+\newblock Explainable AI: A review of machine learning interpretability methods.
+\newblock \emph{Entropy}, 23(1):18, 2021.
+\newblock \url{https://www.mdpi.com/1099-4300/23/1/18}
+
+\bibitem{ribeiro2016}
+M.~T.~Ribeiro, S.~Singh, and C.~Guestrin.
+\newblock ``Why Should I Trust You?'': Explaining the Predictions of Any Classifier.
+\newblock KDD, 2016.
+\newblock \url{https://arxiv.org/abs/1602.04938}
+
+\bibitem{lundberg2017}
+S.~M.~Lundberg and S.-I.~Lee.
+\newblock A Unified Approach to Interpreting Model Predictions.
+\newblock NeurIPS, 2017.
+\newblock \url{https://arxiv.org/abs/1705.07874}
+
+\bibitem{lundberg2020}
+S.~M.~Lundberg et al.
+\newblock Explainable AI for Trees: From Local Explanations to Global Understanding.
+\newblock 2019.
+\newblock \url{https://arxiv.org/abs/1905.04610}
+
+\bibitem{breiman2001}
+L.~Breiman.
+\newblock Random Forests.
+\newblock \emph{Machine Learning}, 45:5--32, 2001.
+\newblock \url{https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf}
+
+\bibitem{hogan2021}
+A.~Hogan et al.
+\newblock Knowledge Graphs.
+\newblock \emph{ACM Computing Surveys}, 54(4), 2021.
+\newblock \url{https://arxiv.org/abs/2003.02320}
+
+\bibitem{rotmensch2017}
+M.~Rotmensch, Y.~Halpern, A.~Tlimat, S.~Horng, and D.~Sontag.
+\newblock Learning a Health Knowledge Graph from Electronic Medical Records.
+\newblock \emph{Scientific Reports}, 7:5994, 2017.
+\newblock \url{https://www.nature.com/articles/s41598-017-05778-z}
+
+\bibitem{claudino2019}
+J.~G.~Claudino et al.
+\newblock Current Approaches to the Use of Artificial Intelligence for Injury Risk Assessment and Performance Prediction in Team Sports.
+\newblock \emph{Sports Medicine -- Open}, 5:28, 2019.
+\newblock \url{https://link.springer.com/article/10.1186/s40798-019-0202-3}
+
+\bibitem{sportdb2}
+L.~Burattini, S.~Romagnoli, A.~Sbrollini, M.~Morettini, A.~Nocera,
+D.~Bondi, T.~Pietrangelo, and V.~Verratti.
+\newblock Sport DB 2.0.
+\newblock Mendeley Data, Version 2, 2024.
+\newblock \url{https://data.mendeley.com/datasets/kzkjkt7mx2}
+
+\bibitem{sportdb2_cinc}
+S.~Romagnoli, A.~Sbrollini, A.~Nocera, M.~Morettini, D.~Bondi,
+T.~Pietrangelo, V.~Verratti, and L.~Burattini.
+\newblock Sport DB 2.0: A New Database of Data Acquired by Wearable and Portable Devices While Practicing Sport.
+\newblock Computing in Cardiology, 2023.
+\newblock \url{https://cinc.org/archives/2023/pdf/CinC2023-067.pdf}
+
+\bibitem{loso_cv}
+A.~Dehghani, T.~Glatard, and E.~Shihab.
+\newblock Subject Cross Validation in Human Activity Recognition.
+\newblock arXiv, 2019.
+\newblock \url{https://arxiv.org/abs/1904.02666}
+
+\bibitem{aiact}
+European Parliament and Council of the European Union.
+\newblock Regulation (EU) 2024/1689 laying down harmonised rules on artificial intelligence.
+\newblock Official Journal of the European Union, 2024.
+\newblock \url{https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng}
+
+\end{thebibliography}
+
+\end{document}
