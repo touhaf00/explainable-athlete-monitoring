@@ -807,6 +807,33 @@ def save_accuracy_by_sport(df):
     )
     plt.close()
 
+def save_window_features(x_stat, sports, groups, meta):
+    feature_names = [
+        "mean_HR", "std_HR", "max_HR",
+        "mean_BR", "std_BR", "max_BR",
+        "mean_RR", "std_RR", "min_RR",
+    ]
+
+    rows = []
+
+    for i, values in enumerate(x_stat):
+        row = {
+            "window_id": i,
+            "sport": sports[i],
+            "subject": groups[i],
+            "true_state": meta[i]["state"],
+        }
+
+        for name, value in zip(feature_names, values):
+            row[name] = float(value)
+
+        rows.append(row)
+
+    df = pd.DataFrame(rows)
+    output_path = os.path.join(OUTPUT_DIR, "window_features_multisport.csv")
+    df.to_csv(output_path, index=False)
+
+    return df
 
 def save_hitl_plot(df):
     counts = (
@@ -896,6 +923,8 @@ def main():
     if len(x_seq) == 0:
         raise RuntimeError("No windows were loaded. Check SportDB2 path.")
 
+    save_window_features(x_stat, sports, groups, meta)
+    
     print("")
     print("Dataset")
     print(f"  Files used: {len(used_files)}")
