@@ -1,7 +1,7 @@
 import os
 from scipy.io import loadmat
 
-root = "../SportDB2"
+root = "SportDB2"
 
 for sport in os.listdir(root):
     sport_path = os.path.join(root, sport)
