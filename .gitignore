@@ -34,3 +34,5 @@ htmlcov/
 *.toc
 *.lof
 *.lot
+
+artifacts/
