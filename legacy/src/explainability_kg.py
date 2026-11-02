@@ -33,8 +33,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 INPUT_FILE = os.path.join(
     BASE_DIR,
-    "outputs_dl_multisport",
-    "window_features_multisport.csv",
+    "outputs_recovery_features",
+    "recovery_feature_table.csv",
 )
 
 RANKING_FILE = os.path.join(
@@ -45,7 +45,7 @@ RANKING_FILE = os.path.join(
 
 OUTPUT_DIR = os.path.join(
     BASE_DIR,
-    "outputs_explainability_kg",
+    "outputs_explainability_kg_v2",
 )
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -60,6 +60,19 @@ FEATURES = [
     "mean_RR",
     "std_RR",
     "min_RR",
+    "slope_HR_per_sec",
+    "slope_BR_per_sec",
+    "slope_RR_per_sec",
+    "delta_HR",
+    "delta_BR",
+    "delta_RR",
+    "rmssd_RR",
+    "mean_HR_delta_cal",
+    "mean_BR_delta_cal",
+    "mean_RR_delta_cal",
+    "mean_HR_ratio_cal",
+    "mean_BR_ratio_cal",
+    "mean_RR_ratio_cal",
 ]
 
 STATES = [
@@ -82,23 +95,48 @@ FEATURE_TO_CONCEPT = {
     "mean_HR": "Heart rate",
     "std_HR": "Heart rate",
     "max_HR": "Heart rate",
+    "slope_HR_per_sec": "Heart rate",
+    "delta_HR": "Heart rate",
+    "mean_HR_delta_cal": "Heart rate",
+    "mean_HR_ratio_cal": "Heart rate",
+
     "mean_BR": "Breathing rate",
     "std_BR": "Breathing rate",
     "max_BR": "Breathing rate",
+    "slope_BR_per_sec": "Breathing rate",
+    "delta_BR": "Breathing rate",
+    "mean_BR_delta_cal": "Breathing rate",
+    "mean_BR_ratio_cal": "Breathing rate",
+
     "mean_RR": "RR interval",
     "std_RR": "RR interval",
     "min_RR": "RR interval",
+    "slope_RR_per_sec": "RR interval",
+    "delta_RR": "RR interval",
+    "rmssd_RR": "RR interval",
+    "mean_RR_delta_cal": "RR interval",
+    "mean_RR_ratio_cal": "RR interval",
 }
 
 
 def load_data() -> pd.DataFrame:
     if not os.path.exists(INPUT_FILE):
         raise FileNotFoundError(
-            "window_features_multisport.csv was not found. "
-            "Run deep_learning_multisport.py first."
+            "recovery_feature_table.csv was not found. "
+            "Run recovery_feature_experiment.py first."
         )
 
     df = pd.read_csv(INPUT_FILE)
+
+    if (
+        "subject" not in df.columns
+        and "group" in df.columns
+    ):
+        df = df.rename(
+            columns={
+                "group": "subject",
+            }
+        )
 
     required_columns = {
         "window_id",
@@ -109,35 +147,87 @@ def load_data() -> pd.DataFrame:
     }
 
     missing_columns = sorted(
-        required_columns.difference(df.columns)
+        required_columns.difference(
+            df.columns
+        )
     )
 
     if missing_columns:
         raise ValueError(
-            "Missing columns in window_features_multisport.csv: "
-            + ", ".join(missing_columns)
+            "Missing columns in recovery_feature_table.csv: "
+            + ", ".join(
+                missing_columns
+            )
         )
 
-    df = df[df["true_state"].isin(STATES)].copy()
-    df = df.dropna(subset=FEATURES)
-    df["label"] = df["true_state"].map(STATE_TO_ID)
+    df = df[
+        df["true_state"].isin(
+            STATES
+        )
+    ].copy()
+
+    df = df.dropna(
+        subset=FEATURES
+    )
+
+    df["label"] = (
+        df["true_state"]
+        .map(
+            STATE_TO_ID
+        )
+    )
 
     if df.empty:
         raise ValueError(
             "No valid windows remain after filtering."
         )
 
-    df["window_id"] = df["window_id"].astype(int)
-    df["sport"] = df["sport"].astype(str)
-    df["subject"] = df["subject"].astype(str)
-    df["true_state"] = df["true_state"].astype(str)
-    df["label"] = df["label"].astype(int)
+    df["window_id"] = (
+        df["window_id"]
+        .astype(int)
+    )
 
-    print(f"Loaded windows: {len(df)}")
-    print(f"Sports: {sorted(df['sport'].unique())}")
-    print(f"States: {sorted(df['true_state'].unique())}")
+    df["sport"] = (
+        df["sport"]
+        .astype(str)
+    )
 
-    return df.reset_index(drop=True)
+    df["subject"] = (
+        df["subject"]
+        .astype(str)
+    )
+
+    df["true_state"] = (
+        df["true_state"]
+        .astype(str)
+    )
+
+    df["label"] = (
+        df["label"]
+        .astype(int)
+    )
+
+    print(
+        f"Loaded windows: {len(df)}"
+    )
+
+    print(
+        f"Features: {len(FEATURES)}"
+    )
+
+    print(
+        f"Sports: "
+        f"{sorted(df['sport'].unique())}"
+    )
+
+    print(
+        f"States: "
+        f"{sorted(df['true_state'].unique())}"
+    )
+
+    return df.reset_index(
+        drop=True
+    )
 
 
 def make_model(

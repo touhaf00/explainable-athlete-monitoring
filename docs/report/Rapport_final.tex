@@ -1,0 +1,2405 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\addto\captionsfrench{%
+  \renewcommand{\tablename}{Tableau}%
+}
+\usepackage{lmodern}
+\usepackage{geometry}
+\geometry{
+  top=2.3cm,
+  bottom=2.4cm,
+  left=2.6cm,
+  right=2.6cm
+}
+
+\usepackage{graphicx}
+\graphicspath{{./}{images/}}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{xurl}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{pgfgantt}
+\usepackage{pdflscape}
+\usepackage[section]{placeins}
+
+\onehalfspacing
+\setlength{\parindent}{0.75cm}
+\setlength{\parskip}{0.10cm}
+\setlength{\headheight}{14pt}
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{3}
+\raggedbottom
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small TOUHAF Aya -- LISIC / ULCO}
+\rhead{\small TER -- Master 1 Informatique}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}
+  {\large\bfseries}
+  {\thesection.}
+  {0.6em}
+  {}
+  [\titlerule]
+
+\titleformat{\subsection}
+  {\normalsize\bfseries}
+  {\thesubsection.}
+  {0.5em}
+  {}
+
+\titleformat{\subsubsection}
+  {\normalsize\itshape}
+  {\thesubsubsection.}
+  {0.5em}
+  {}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!45!black,
+  citecolor=green!35!black,
+  urlcolor=blue!60!black,
+  pdftitle={Vers une Intelligence Artificielle Explicable pour la Surveillance de l'État Physiologique de l'Athlète de Haut Niveau},
+  pdfauthor={TOUHAF Aya}
+}
+
+\newcommand{\safeincludegraphics}[2][]{%
+  \IfFileExists{#2}{%
+    \includegraphics[#1]{#2}%
+  }{%
+    \fbox{%
+      \begin{minipage}[c][4.2cm][c]{0.88\linewidth}
+        \centering
+        \textit{Figure non trouvée lors de la compilation}\\[0.2cm]
+        \texttt{\detokenize{#2}}
+      \end{minipage}
+    }%
+  }%
+}
+
+\newcommand{\HR}{\mathrm{HR}}
+\newcommand{\BR}{\mathrm{BR}}
+\newcommand{\RR}{\mathrm{RR}}
+
+\newcommand{\openaccessref}[2]{%
+  \nobreak\hspace{0.08em}%
+  \href{#2}{\textcolor{green!35!black}{[#1]}}%
+}
+
+
+\begin{document}
+\hypersetup{pageanchor=false}
+
+% Page de titre
+
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+
+\vspace*{0.1cm}
+
+\IfFileExists{images/logo_ulco.png}{%
+  \includegraphics[width=0.20\textwidth]{images/logo_ulco.png}%
+}{%
+  {\Large\bfseries ULCO}%
+}
+
+\vspace{0.45cm}
+
+{\Large\textsc{Université du Littoral Côte d'Opale}}\\[0.18cm]
+{\large Laboratoire d'Informatique Signal et Image de la Côte d'Opale}\\[0.10cm]
+{\large LISIC}\\[0.25cm]
+{\normalsize Master Informatique -- Première année}
+
+\vspace{0.75cm}
+
+\rule{\linewidth}{0.8pt}\\[0.30cm]
+
+{\LARGE\bfseries
+Vers une Intelligence Artificielle Explicable\\[0.18cm]
+pour la Surveillance de l'État Physiologique\\[0.18cm]
+de l'Athlète de Haut Niveau
+}\\[0.35cm]
+
+{\large\itshape
+Espace d'État Fonctionnel, Graphes de Connaissances\\
+et Cohérence Sémantique
+}
+
+\vspace{0.25cm}
+\rule{\linewidth}{0.8pt}
+
+\vspace{0.65cm}
+
+{\large Travail d'Étude et de Recherche}\\[0.10cm]
+{\large Année universitaire 2025--2026}
+
+\vspace{0.75cm}
+
+{\large\bfseries TOUHAF Aya}\\[0.45cm]
+
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{>{\bfseries}ll}
+Encadrant & Dr.~Adeel Ahmad \\
+Laboratoire & LISIC -- Université du Littoral Côte d'Opale \\
+Période & Juin -- Juillet 2026 \\
+Date de remise & 14 juillet 2026 \\
+\end{tabular}
+
+\vfill
+{\small Rapport de Travail d'Étude et de Recherche}
+
+\end{titlepage}
+
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+
+% Résumé et tables
+
+
+\section*{Résumé}
+\addcontentsline{toc}{section}{Résumé}
+
+\begin{spacing}{1.05}
+
+Les dispositifs portables permettent aujourd'hui d'enregistrer en continu des
+signaux physiologiques tels que la fréquence cardiaque (\emph{Heart Rate},
+HR)\openaccessref{13}{https://cinc.org/archives/2023/pdf/CinC2023-067.pdf},
+la fréquence respiratoire (\emph{Breathing Rate}, BR)\openaccessref{13}{https://cinc.org/archives/2023/pdf/CinC2023-067.pdf}
+et les intervalles RR\openaccessref{13}{https://cinc.org/archives/2023/pdf/CinC2023-067.pdf},
+c'est-à-dire le temps séparant deux battements cardiaques successifs. Ces
+mesures peuvent alimenter des modèles d'apprentissage automatique\openaccessref{6}{https://www.deeplearningbook.org} afin de
+reconnaître des états fonctionnels comme le repos, l'effort ou la
+récupération. Une classe prédite seule reste toutefois difficile à exploiter :
+il faut également comprendre pourquoi le modèle l'a choisie et savoir si cette
+décision est suffisamment fiable pour être acceptée sans contrôle humain.
+
+Ce rapport présente notre contribution : une chaîne complète d'intelligence
+artificielle explicable (XAI)\openaccessref{1}{https://www.mdpi.com/1099-4300/23/1/18}
+appliquée à SportDB~2.0\openaccessref{12}{https://data.mendeley.com/datasets/kzkjkt7mx2/2}. Une première étude est menée
+sur la course à pied avec six états fonctionnels. Cinq modèles sont comparés
+dans un protocole \emph{Leave-One-Subject-Out} (LOSO)\openaccessref{14}{https://arxiv.org/abs/1904.02666}, c'est-à-dire une
+validation dans laquelle un groupe entier est gardé pour le test à chaque
+itération : Random Forest (RF, forêt aléatoire)\openaccessref{5}{https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf},
+Multilayer Perceptron (MLP, perceptron multicouche)\openaccessref{6}{https://www.deeplearningbook.org},
+Long Short-Term Memory (LSTM)\openaccessref{6}{https://www.deeplearningbook.org},
+Gated Recurrent Unit (GRU)\openaccessref{7}{https://arxiv.org/abs/1406.1078}
+et Transformer\openaccessref{8}{https://arxiv.org/abs/1706.03762}. Les architectures temporelles ne dominent pas
+significativement sur l'accuracy globale\openaccessref{6}{https://www.deeplearningbook.org}, c'est-à-dire le taux total de
+prédictions correctes, mais elles améliorent le recall\openaccessref{6}{https://www.deeplearningbook.org} de certains états
+intermédiaires, autrement dit leur capacité à retrouver les fenêtres qui
+appartiennent réellement à ces états.
+
+L'étude est ensuite étendue à quatre disciplines : course, cyclisme, trekking
+et patinage. Les décisions du Random Forest sont expliquées avec
+\emph{SHapley Additive exPlanations} (SHAP)\openaccessref{3}{https://arxiv.org/abs/1705.07874}, une méthode qui attribue à chaque
+variable une contribution positive ou négative à la prédiction. Ces
+contributions sont ensuite reliées à des concepts physiologiques au moyen
+d'un graphe de connaissances\openaccessref{9}{https://arxiv.org/abs/2003.02320}. Enfin, la confiance prédictive et un score de
+cohérence sémantique\openaccessref{21}{https://www.semantic-web-journal.net/system/files/swj2198.pdf} sont combinés dans un mécanisme
+\emph{Human-in-the-Loop} (HITL, humain dans la boucle)\openaccessref{22}{https://arxiv.org/abs/2108.00941} qui classe chaque
+prédiction en \textsc{accept}, \textsc{check} ou \textsc{review}.
+
+L'évaluation finale est réalisée \emph{out-of-fold}\openaccessref{14}{https://arxiv.org/abs/1904.02666}, ce qui signifie que
+chaque fenêtre est prédite et expliquée par un modèle qui n'a pas été entraîné
+sur son groupe. Sur 6\,821 fenêtres, 871 prédictions sont classées
+\textsc{accept}, 2\,348 \textsc{check} et 3\,602 \textsc{review}. Dans cette
+expérimentation, les deux premières catégories présentent les meilleures
+accuracies, tandis que \textsc{review} concentre la majorité des erreurs. La
+catégorie \textsc{accept} est cependant presque entièrement constituée de
+fenêtres TRE, ce qui impose une interprétation prudente. Le système ne cherche
+donc pas à remplacer l'expert : il vise à lui montrer l'état prédit, les
+variables qui ont soutenu cette prédiction, son niveau de cohérence et les cas
+qui nécessitent une vérification.
+
+\noindent\textbf{Mots-clés :} intelligence artificielle explicable, séries
+temporelles, surveillance physiologique, SportDB~2.0, Random Forest, LSTM,
+GRU, Transformer, SHAP, graphe de connaissances, Leave-One-Subject-Out,
+Human-in-the-Loop.
+
+\end{spacing}
+
+\newpage
+\tableofcontents
+
+\newpage
+\listoffigures
+\addcontentsline{toc}{section}{Liste des figures}
+
+\newpage
+\listoftables
+\addcontentsline{toc}{section}{Liste des tableaux}
+
+\newpage
+\pagenumbering{arabic}
+
+% Introduction
+
+
+\section{Introduction}
+\label{sec:introduction}
+
+\subsection{Contexte}
+
+Les montres connectées, les ceintures cardiaques et les capteurs
+cardio-respiratoires produisent des séries temporelles, c'est-à-dire des suites
+de mesures ordonnées dans le temps. Elles permettent notamment de suivre la
+fréquence cardiaque, la respiration et la récupération d'un sportif. Ces
+données ouvrent la voie à des systèmes capables de reconnaître
+automatiquement un état fonctionnel et d'aider un entraîneur ou un analyste à
+mieux comprendre l'évolution d'une séance. Les travaux recensés par Claudino
+et al. montrent que l'intelligence artificielle est déjà utilisée dans le
+sport pour la prédiction de performance, l'estimation du risque et l'analyse
+de la charge d'entraînement~\cite{claudino2019}.
+
+Cette automatisation reste toutefois difficile. Les réponses physiologiques
+varient d'un individu à l'autre, mais aussi selon la discipline, l'intensité,
+la durée et le capteur utilisé. Une phase d'effort en course ne produit pas
+exactement la même dynamique qu'une séance de cyclisme ou de trekking. De
+plus, plusieurs fenêtres extraites d'un même enregistrement sont fortement
+corrélées. Si certaines de ces fenêtres sont placées dans l'ensemble d'entraînement
+(\emph{train}) et d'autres dans l'ensemble de test (\emph{test}), le modèle peut reconnaître des caractéristiques propres au
+sujet plutôt que l'état physiologique recherché.
+
+Une deuxième difficulté concerne la compréhension de la décision. Dans un
+contexte de surveillance humaine, afficher uniquement le mot « effort » ou
+« récupération » n'est pas suffisant. Le lecteur doit pouvoir répondre à
+quatre questions simples : quel état a été prédit, avec quelle confiance,
+quelles variables ont soutenu cette décision et faut-il demander une
+vérification humaine ?
+
+\subsection{Problématique}
+
+La question de recherche retenue est la suivante :
+
+\begin{quote}
+\textbf{Comment reconnaître des états physiologiques à partir de données
+multi-sport, tout en fournissant une explication sémantique des décisions et
+en orientant vers un humain les prédictions insuffisamment fiables ?}
+\end{quote}
+
+Cette question se décompose en quatre sous-questions :
+
+\begin{enumerate}[leftmargin=1.8em]
+  \item les modèles temporels exploitent-ils mieux les transitions
+  physiologiques que les modèles utilisant uniquement des résumés
+  statistiques ?
+  \item les performances dépendent-elles principalement de l'architecture du
+  modèle ou de la séparabilité des données ?
+  \item les variables utilisées par le modèle sont-elles cohérentes avec les
+  signaux et les profils associés à l'état annoncé ?
+  \item une décision combinant confiance prédictive et cohérence sémantique
+  permet-elle de sélectionner les prédictions les plus fiables et de montrer
+  clairement celles qui doivent être vérifiées ?
+\end{enumerate}
+
+\subsection{Objectifs et contributions}
+
+L'objectif n'est pas seulement d'obtenir une classe. Pour chaque fenêtre, le
+prototype doit produire une sortie lisible composée de cinq éléments :
+l'état prédit, la probabilité associée, les variables les plus influentes, un
+score de cohérence sémantique et une recommandation HITL. Cette sortie permet
+donc de \emph{voir} la prédiction, mais aussi de comprendre les principaux
+arguments utilisés par le modèle.
+
+La contribution principale de ce TER est la conception et l'évaluation d'un
+pipeline complet qui relie apprentissage automatique, explicabilité,
+représentation sémantique et intervention humaine. Plus précisément, le
+travail réalisé comprend :
+
+\begin{itemize}[leftmargin=1.5em]
+  \item l'exploration et le prétraitement de SportDB~2.0 ;
+  \item la construction d'un espace à six états pour RUN et d'un espace commun
+  à trois états pour l'étude multi-sport ;
+  \item un fenêtrage commun de 50 échantillons avec un pas de 25, permettant
+  de comparer une représentation statistique et une représentation
+  séquentielle des mêmes portions de signal ;
+  \item la comparaison, dans les mêmes plis LOSO, d'un Random Forest, d'un MLP,
+  d'un LSTM, d'un GRU et d'un Transformer ;
+  \item l'analyse de la séparabilité des états avec l'analyse de variance,
+  le score de Fisher, l'analyse en composantes principales et le score de
+  silhouette ;
+  \item une étude d'ablation contrôlée sur l'inclusion de SKA ;
+  \item l'explication globale et locale des décisions du Random Forest avec
+  SHAP ;
+  \item la construction d'un graphe de connaissances reliant variables,
+  concepts physiologiques et états ;
+  \item la définition d'un score de cohérence sémantique ;
+  \item la validation out-of-fold d'un mécanisme HITL fondé sur la confiance
+  et la cohérence ;
+  \item la production de graphiques permettant d'observer les performances,
+  les erreurs, les variables importantes et le compromis entre automatisation
+  et vérification humaine.
+\end{itemize}
+
+\subsection{Organisation du rapport}
+
+La section~\ref{sec:etat_art} présente les travaux existants les plus proches
+du sujet et précise la place de notre contribution. La
+section~\ref{sec:sujet} décrit notre système, les données retenues et la
+construction des états et des variables. La section~\ref{sec:methodologie}
+détaille les algorithmes, les formules et le protocole expérimental. La
+section~\ref{sec:experiences} présente les résultats et explique la lecture de
+chaque graphique. La section~\ref{sec:difficultes} revient sur les difficultés
+rencontrées et les solutions mises en place. La
+section~\ref{sec:discussion} compare ensuite nos choix et nos résultats aux
+travaux étudiés dans l'état de l'art. Enfin, la
+section~\ref{sec:conclusion} répond à la problématique et présente les
+perspectives.
+
+% État de l'art
+
+\section{État de l'art}
+\label{sec:etat_art}
+
+\subsection{Surveillance physiologique par dispositifs portables}
+
+Les dispositifs portables sont utilisés dans le sport pour suivre la charge
+interne, la récupération et certains marqueurs de fatigue. Claudino et al.
+ont recensé les principales applications de l'intelligence artificielle à la
+prédiction de performance et au risque de blessure dans les sports collectifs
+~\cite{claudino2019}. Leur synthèse montre que les modèles peuvent exploiter
+des données d'entraînement variées, mais souligne aussi la difficulté de
+généraliser d'un groupe d'athlètes à un autre.
+
+La base SportDB~2.0, publiée par Romagnoli et al., rassemble des signaux
+cardio-respiratoires acquis pendant plusieurs disciplines sportives
+~\cite{sportdb2data,sportdb2paper}. Elle contient notamment trois familles de
+mesures utilisées dans ce TER :
+
+\begin{itemize}[leftmargin=1.5em]
+  \item la fréquence cardiaque, appelée \emph{Heart Rate} (HR), qui indique le
+  nombre de battements par minute ;
+  \item la fréquence respiratoire, appelée \emph{Breathing Rate} (BR), qui
+  indique le nombre de cycles respiratoires par minute ;
+  \item les intervalles RR, qui mesurent le temps entre deux pics R
+  successifs de l'électrocardiogramme.
+\end{itemize}
+
+Lorsque l'intervalle RR est exprimé en millisecondes, la fréquence cardiaque
+peut être approximée par :
+
+\begin{equation}
+\HR \simeq \frac{60\,000}{\RR}.
+\label{eq:hr_rr}
+\end{equation}
+
+Dans l'équation~\ref{eq:hr_rr}, $60\,000$ représente le nombre de
+millisecondes contenues dans une minute. Si, par exemple, deux battements sont
+séparés de 1\,000 millisecondes, alors la fréquence cardiaque estimée est de
+$60\,000/1\,000=60$ battements par minute. Cette relation explique pourquoi
+HR et RR apportent des informations proches mais inversées : lorsque le
+rythme cardiaque augmente, l'intervalle RR diminue généralement.
+
+Des travaux récents se rapprochent de notre problématique. Estrella et
+Capdevila utilisent des indicateurs de variabilité de la fréquence cardiaque,
+plusieurs modèles d'apprentissage automatique et SHAP afin de distinguer des
+profils sportifs~\cite{estrella2025}. Leur objectif porte cependant sur
+l'identification de profils ou d'individus, alors que notre travail cherche à
+reconnaître des états successifs d'une séance et à décider si chaque
+prédiction peut être acceptée ou doit être vérifiée.
+
+\subsection{Reconnaissance d'états et généralisation entre sujets}
+
+Dans un problème de classification supervisée\openaccessref{6}{https://www.deeplearningbook.org}, le modèle apprend une fonction
+
+\begin{equation}
+f:\mathcal{X}\rightarrow\mathcal{Y},
+\end{equation}
+
+où $\mathcal{X}$ désigne l'espace des observations et $\mathcal{Y}$ l'ensemble
+des classes possibles. Dans notre cas, une observation est une fenêtre de
+signal et une classe peut être le repos, l'effort ou la récupération.
+
+Les travaux de Dehghani et al. montrent qu'une validation aléatoire peut
+surestimer les performances en reconnaissance d'activité humaine lorsque des
+fenêtres issues d'un même sujet sont réparties entre le train et le test
+~\cite{dehghani2019}. Ils recommandent une validation séparant les sujets.
+Cette observation motive le protocole \emph{Leave-One-Subject-Out} (LOSO)
+utilisé dans notre travail : à chaque itération, un groupe complet est retiré
+de l'entraînement et utilisé pour le test.
+
+Cette exigence est importante pour notre application. Un système destiné à
+surveiller un nouvel athlète ne doit pas être évalué uniquement sur des
+fenêtres ressemblant à celles qu'il a déjà vues. Le LOSO cherche donc à
+mesurer la capacité de généralisation vers un groupe non utilisé pendant
+l'apprentissage.
+
+\subsection{Modèles tabulaires et modèles temporels}
+
+Breiman a introduit le Random Forest, ou forêt aléatoire, qui combine de
+nombreux arbres de décision afin de réduire la variance d'un arbre unique
+~\cite{breiman2001}. Chaque arbre apprend des règles du type « si la fréquence
+cardiaque moyenne dépasse un seuil, alors... ». Les prédictions des arbres
+sont ensuite agrégées. Ce modèle convient à des variables tabulaires et peut
+capturer des relations non linéaires.
+
+Le Multilayer Perceptron (MLP, perceptron multicouche) est un réseau de
+neurones composé de couches entièrement connectées. Il reçoit également un
+vecteur de variables statistiques, mais apprend des combinaisons plus souples
+que les règles d'un arbre.
+
+Les modèles Long Short-Term Memory (LSTM) et Gated Recurrent Unit (GRU) sont
+des réseaux récurrents conçus pour traiter des séquences. Le LSTM utilise des
+portes qui contrôlent l'information mémorisée, oubliée ou transmise. Le GRU
+propose un mécanisme proche avec une structure plus compacte
+~\cite{goodfellow2016,cho2014}. Dans notre contexte, ces modèles peuvent
+observer l'ordre des valeurs dans une fenêtre, et pas seulement sa moyenne ou
+son écart-type.
+
+Le Transformer introduit une autre manière d'analyser les séquences :
+l'auto-attention\openaccessref{8}{https://arxiv.org/abs/1706.03762}. Elle est calculée par :
+
+\begin{equation}
+\operatorname{Attention}(\mathbf{Q},\mathbf{K},\mathbf{V})
+=
+\operatorname{softmax}
+\left(
+\frac{\mathbf{Q}\mathbf{K}^{\top}}{\sqrt{d_k}}
+\right)\mathbf{V}.
+\label{eq:attention}
+\end{equation}
+
+Dans l'équation~\ref{eq:attention}, $\mathbf{Q}$ représente les requêtes,
+$\mathbf{K}$ les clés et $\mathbf{V}$ les valeurs. Le produit
+$\mathbf{Q}\mathbf{K}^{\top}$ mesure la similarité entre positions de la
+séquence. La division par $\sqrt{d_k}$ stabilise les valeurs lorsque la
+dimension $d_k$ augmente. La fonction \emph{softmax}\openaccessref{6}{https://www.deeplearningbook.org} transforme ensuite les
+scores en poids positifs dont la somme vaut 1. Le modèle peut ainsi accorder
+plus d'importance aux instants les plus utiles pour reconnaître l'état.
+
+\subsection{Explicabilité des modèles appliqués aux signaux physiologiques}
+
+Linardatos et al. distinguent les méthodes d'explicabilité globales, qui
+décrivent le comportement général d'un modèle, et les méthodes locales, qui
+expliquent une prédiction particulière~\cite{linardatos2021}. Ribeiro et al.
+ont proposé Local Interpretable Model-agnostic Explanations (LIME)\openaccessref{2}{https://arxiv.org/abs/1602.04938}, qui
+approxime localement un modèle complexe par un modèle plus simple.
+
+Lundberg et Lee ont proposé SHapley Additive exPlanations (SHAP), fondé sur
+les valeurs de Shapley~\cite{lundberg2017}. Une explication additive s'écrit :
+
+\begin{equation}
+g(\mathbf{z}')
+=
+\phi_0+\sum_{j=1}^{M}\phi_j z'_j.
+\label{eq:shap_additive}
+\end{equation}
+
+Dans l'équation~\ref{eq:shap_additive}, $\phi_0$ est la valeur de référence du
+modèle, $M$ le nombre de variables et $\phi_j$ la contribution de la variable
+$j$. Une contribution positive pousse la prédiction vers la classe étudiée ;
+une contribution négative l'en éloigne. Le terme $z'_j$ indique si la
+variable est présente dans la représentation simplifiée de l'explication.
+TreeSHAP\openaccessref{4}{https://arxiv.org/abs/1905.04610} calcule efficacement ces contributions pour les modèles à base
+d'arbres.
+
+Shen et al. montrent que l'explicabilité des signaux physiologiques reste un
+problème actif : les méthodes doivent expliquer des relations non linéaires,
+des dépendances temporelles et des données souvent hétérogènes
+~\cite{shen2025}. Dans le domaine sportif, Kranzinger et al. ont recensé 19
+études de XAI publiées entre 2014 et juin 2024. Leur analyse montre une forte
+domination de SHAP, mais aussi un manque de méthodes sémantiques, de
+validation par des experts et de démarches centrées sur l'utilisateur
+~\cite{kranzinger2025}. Notre travail se place précisément dans cet espace :
+SHAP est utilisé pour attribuer les variables, puis un graphe et un score de
+cohérence ajoutent un niveau d'interprétation spécifique au domaine.
+
+\subsection{Graphes de connaissances et intervention humaine}
+
+Un graphe de connaissances représente des informations sous forme d'entités
+reliées par des relations. Un triplet peut par exemple être écrit :
+
+\[
+(\texttt{mean\_HR},\ \texttt{mesure},\ \texttt{fréquence cardiaque}).
+\]
+
+Hogan et al. présentent les principes généraux de ces graphes
+~\cite{hogan2020}. Rotmensch et al. montrent qu'ils peuvent aussi structurer
+des concepts de santé à partir de données cliniques~\cite{rotmensch2017}.
+Lecue souligne leur intérêt pour l'intelligence artificielle explicable :
+ils permettent de relier une contribution numérique à un concept et à un
+contexte compréhensible par l'utilisateur~\cite{lecue2020}.
+
+Le mécanisme Human-in-the-Loop (HITL, humain dans la boucle) désigne un
+système dans lequel l'algorithme ne prend pas toutes les décisions seul. Wu
+et al. recensent plusieurs formes de collaboration entre modèle et humain,
+notamment l'orientation des cas difficiles vers un expert~\cite{wu2021}.
+Geifman et El-Yaniv formalisent cette idée avec la classification sélective\openaccessref{17}{https://arxiv.org/abs/1705.08500} :
+le modèle conserve les cas les plus fiables et s'abstient sur les autres.
+
+Deux mesures sont centrales :
+
+\begin{equation}
+\text{coverage}
+=
+\frac{N_{\mathrm{retenu}}}{N_{\mathrm{total}}},
+\qquad
+\text{risk}
+=
+1-\text{accuracy}_{\mathrm{retenu}}.
+\label{eq:risk_coverage}
+\end{equation}
+
+Dans l'équation~\ref{eq:risk_coverage}, la \emph{coverage}\openaccessref{17}{https://arxiv.org/abs/1705.08500} est la proportion
+de prédictions que le système accepte de traiter automatiquement. Le
+\emph{risk}\openaccessref{17}{https://arxiv.org/abs/1705.08500} est le taux d'erreur parmi ces prédictions. Une bonne stratégie
+sélective cherche une coverage suffisamment élevée tout en maintenant un risk
+faible.
+
+\subsection{Synthèse des travaux proches et positionnement de notre contribution}
+
+Le tableau~\ref{tab:related_work} résume les travaux les plus proches et met en
+évidence la place de notre contribution.
+
+\begin{table}[H]
+\centering
+\caption{Comparaison synthétique avec des travaux proches.}
+\label{tab:related_work}
+\begin{tabularx}{\linewidth}{p{2.8cm}XX}
+\toprule
+\textbf{Travail} & \textbf{Apport principal} & \textbf{Différence avec notre TER} \\
+\midrule
+Claudino et al.~\cite{claudino2019}
+& Revue des usages de l'IA pour la performance et le risque sportif.
+& Notre étude construit et évalue un pipeline concret de reconnaissance
+d'états physiologiques. \\
+
+Dehghani et al.~\cite{dehghani2019}
+& Mise en évidence du biais créé par une validation qui mélange les fenêtres
+d'un même sujet.
+& Notre protocole reprend cette exigence et l'étend aux prédictions, aux
+explications et au mécanisme HITL. \\
+
+Estrella et Capdevila~\cite{estrella2025}
+& Classification de profils sportifs avec la variabilité de la fréquence cardiaque
+(\emph{Heart Rate Variability}, HRV)\openaccessref{20}{https://www.mdpi.com/2075-4663/13/2/30}, plusieurs modèles et SHAP.
+& Notre cible est un état dynamique de séance ; nous ajoutons les modèles
+temporels, le graphe sémantique et l'abstention. \\
+
+Kranzinger et al.~\cite{kranzinger2025}
+& Revue de l'XAI en science du sport ; domination de SHAP et manque de
+validation spécifique au domaine.
+& Notre pipeline complète SHAP par un graphe de connaissances et une mesure de
+cohérence. \\
+
+Lecue~\cite{lecue2020}
+& Rôle des graphes de connaissances pour relier explication et connaissance
+symbolique.
+& Notre graphe est appliqué aux variables HR, BR et RR et alimente une
+décision HITL. \\
+
+Geifman et El-Yaniv~\cite{geifman2017}
+& Classification sélective fondée sur la confiance.
+& Notre fiabilité combine confiance prédictive et cohérence sémantique. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+L'originalité de ce TER ne repose donc pas sur un modèle isolé. Elle vient de
+l'intégration, dans une même chaîne, de la comparaison tabulaire/temporelle,
+de l'analyse de séparabilité, de SHAP, d'un graphe de connaissances, d'un
+score de cohérence et d'une décision HITL évaluée out-of-fold.
+\FloatBarrier
+% Notre contribution
+
+\section{Notre contribution : conception d'un pipeline explicable de surveillance physiologique multi-sport}
+\label{sec:sujet}
+
+\subsection{Vue fonctionnelle et nature des prédictions}
+
+Notre système transforme une portion de signaux cardio-respiratoires en une
+décision structurée. Pour une fenêtre donnée, il produit :
+
+\begin{enumerate}[leftmargin=1.8em]
+  \item un état fonctionnel prédit, par exemple repos, effort ou récupération ;
+  \item une confiance prédictive, comprise entre 0 et 1 ;
+  \item les variables qui ont le plus soutenu la classe prédite ;
+  \item un score de cohérence entre ces variables et le profil de l'état ;
+  \item une recommandation \textsc{accept}, \textsc{check} ou
+  \textsc{review}.
+\end{enumerate}
+
+La contribution ne se limite donc pas à entraîner un classifieur. Elle ajoute
+une représentation de l'explication et un mécanisme de contrôle permettant de
+visualiser ce que le modèle a prédit, pourquoi il l'a prédit et si la décision
+peut être utilisée automatiquement.
+
+Le prototype vise le suivi de l'état fonctionnel d'un sportif. Il ne réalise
+pas de diagnostic médical et ne remplace ni un médecin ni un spécialiste de
+la préparation physique.
+
+\subsection{Base de données SportDB~2.0}
+
+SportDB~2.0\cite{sportdb2data} contient 168 jeux de données cardio-respiratoires provenant de
+130 sujets et de 11 sports~\cite{sportdb2paper}. Selon les séances, les
+fichiers contiennent un électrocardiogramme (ECG)\openaccessref{16}{https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0084018}, la fréquence cardiaque HR,
+la fréquence respiratoire BR et les intervalles RR. Des fichiers
+\texttt{TrNote.txt} décrivent les phases de la séance et permettent
+d'associer une période du signal à un état.
+
+L'arborescence est organisée par discipline et enregistrement. Une séance peut
+comprendre :
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \texttt{Data.mat}, qui contient les séries numériques ;
+  \item \texttt{TrNote.txt}, qui contient les annotations temporelles ;
+  \item \texttt{Dem.txt}, qui contient des informations démographiques ou
+  contextuelles.
+\end{itemize}
+
+\subsection{Choix des disciplines}
+
+La course à pied, notée RUN, a d'abord été étudiée séparément car son protocole
+décrit plusieurs phases successives d'effort. Cette granularité permet
+d'évaluer si les modèles temporels reconnaissent mieux les transitions.
+
+L'étude multi-sport utilise ensuite :
+
+\begin{itemize}[leftmargin=1.5em]
+  \item RUN pour la course ;
+  \item CYC pour le cyclisme ;
+  \item TRE pour le trekking ;
+  \item SKA pour le patinage.
+\end{itemize}
+
+Ces disciplines disposent de séries HR et RR directement exploitables dans la
+version étudiée. Les sports disponibles principalement sous forme de segments
+ECG n'ont pas été intégrés, car leur exploitation aurait nécessité une
+détection robuste des pics R, un contrôle des artefacts et une reconstruction
+des intervalles RR. Un complexe QRS désigne l'ensemble des ondes Q, R et S
+observées sur un électrocardiogramme. Elgendi montre que les méthodes de
+détection des complexes QRS\openaccessref{16}{https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0084018} doivent être choisies et validées en fonction du bruit et des contraintes
+des systèmes portables~\cite{elgendi2014}.
+
+\subsection{Construction des états fonctionnels}
+
+Pour RUN, six états sont conservés :
+
+\[
+\begin{aligned}
+S_0&=\text{repos}, &
+S_1&=\text{initiation}, &
+S_2&=\text{effort intense},\\
+S_3&=\text{effort soutenu}, &
+S_4&=\text{charge maximale}, &
+S_5&=\text{récupération}.
+\end{aligned}
+\]
+
+Le symbole $S_k$ désigne ici la classe d'indice $k$. Cette représentation
+préserve l'ordre des phases du protocole RUN et permet d'étudier les
+confusions entre niveaux d'effort voisins.
+
+Pour la comparaison multi-sport, les protocoles sont ramenés à trois états
+communs :
+
+\[
+S_0=\text{repos},\qquad
+S_1=\text{effort},\qquad
+S_2=\text{récupération}.
+\]
+
+Cette harmonisation est nécessaire parce que les sports ne possèdent pas les
+mêmes annotations. Elle permet de construire une cible commune, mais fusionne
+les quatre niveaux d'effort détaillés de RUN. La comparaison multi-sport est
+donc plus générale, tandis que l'expérience RUN conserve une description plus
+fine des transitions.
+
+\subsection{Fenêtrage commun de 50 échantillons avec un pas de 25}
+
+Les signaux bruts sont trop longs pour être fournis en une seule fois aux
+modèles. Ils sont découpés en fenêtres de 50 échantillons. Une fenêtre est
+simplement une portion continue de 50 valeurs successives du signal.
+
+Le pas est fixé à 25 échantillons. Après avoir extrait une première fenêtre
+des positions 1 à 50, la suivante commence à la position 26 et se termine à
+75. Les deux fenêtres partagent donc 25 valeurs, ce qui correspond à un
+chevauchement de :
+
+\begin{equation}
+\text{chevauchement}
+=
+1-\frac{\text{pas}}{\text{taille de fenêtre}}
+=
+1-\frac{25}{50}
+=
+0{,}5
+=
+50\,\%.
+\end{equation}
+
+Ce chevauchement permet de ne pas perdre une transition qui se situerait à la
+frontière de deux fenêtres, tout en évitant de créer une nouvelle fenêtre à
+chaque échantillon.
+
+Les modèles tabulaires ne reçoivent pas directement les 50 valeurs. Chaque
+fenêtre est résumée par neuf variables :
+
+\begin{equation}
+\mathbf{x}
+=
+\left[
+\mu_{\HR},
+\sigma_{\HR},
+\max(\HR),
+\mu_{\BR},
+\sigma_{\BR},
+\max(\BR),
+\mu_{\RR},
+\sigma_{\RR},
+\min(\RR)
+\right].
+\label{eq:features}
+\end{equation}
+
+Le vecteur $\mathbf{x}$ contient donc neuf nombres. Le symbole $\mu$ désigne la
+moyenne et $\sigma$ l'écart-type, qui mesure la dispersion des valeurs autour
+de la moyenne. Plus précisément :
+
+\begin{itemize}[leftmargin=1.5em]
+  \item $\mu_{\HR}$ est la fréquence cardiaque moyenne de la fenêtre ;
+  \item $\sigma_{\HR}$ mesure sa variabilité ;
+  \item $\max(\HR)$ est la plus grande valeur de HR ;
+  \item les trois mêmes résumés sont calculés pour BR ;
+  \item $\mu_{\RR}$ et $\sigma_{\RR}$ décrivent les intervalles RR ;
+  \item $\min(\RR)$ correspond à l'intervalle le plus court, donc souvent au
+  rythme cardiaque le plus rapide de la fenêtre.
+\end{itemize}
+
+Le Random Forest et le MLP utilisent ce vecteur de neuf variables. Les modèles
+LSTM, GRU et Transformer conservent au contraire la séquence complète de
+50 échantillons afin d'observer l'ordre et l'évolution des signaux. Les deux
+familles de modèles analysent ainsi les mêmes portions temporelles, mais sous
+deux représentations différentes.
+
+Les fenêtres contenant des valeurs non finies sont exclues. La normalisation
+est apprise uniquement sur les données d'entraînement de chaque pli afin
+d'éviter que le groupe de test influence le modèle.
+
+\subsection{Corpus expérimentaux retenus}
+
+Avec le fenêtrage de 50 échantillons et le pas de 25, le corpus RUN utilisé
+pour la comparaison des cinq modèles contient 1\,251 fenêtres réparties entre
+dix groupes et six états. Le corpus multi-sport contient 6\,821 fenêtres et
+32 groupes dans la version expérimentale évaluée.
+
+\begin{table}[H]
+\centering
+\caption{Composition du corpus multi-sport utilisé dans les expériences.}
+\label{tab:corpus_multisport}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Sport} & \textbf{Groupes} & \textbf{Fenêtres} & \textbf{Part} \\
+\midrule
+RUN & 10 & 1\,296 & 19,0\,\% \\
+CYC & 11 & 1\,091 & 16,0\,\% \\
+TRE & 7  & 2\,278 & 33,4\,\% \\
+SKA & 4  & 2\,156 & 31,6\,\% \\
+\midrule
+\textbf{Total} & \textbf{32} & \textbf{6\,821} & \textbf{100\,\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La dernière colonne se lit comme la proportion du corpus total. Par exemple,
+les 2\,278 fenêtres TRE représentent 33,4\,\% des 6\,821 fenêtres. La
+répartition des classes est déséquilibrée : 1\,275 fenêtres de repos,
+4\,796 fenêtres d'effort et 750 fenêtres de récupération. TRE ne contribue
+qu'à l'état effort dans l'espace commun. Cette particularité doit être prise
+en compte lors de l'interprétation des accuracies et du mécanisme HITL.
+
+\subsection{Organisation temporelle du travail}
+\label{subsec:organisation_temporelle}
+
+Le projet a officiellement commencé le 1\textsuperscript{er} juin 2026,
+à la suite d'une première réunion avec l'encadrant. Le travail a ensuite
+progressé de manière itérative : les recherches bibliographiques, les
+expérimentations et les choix méthodologiques ont été approfondis au fur et à
+mesure des résultats obtenus et des réunions de suivi.
+
+La figure~\ref{fig:gantt_ter} présente cette progression sous la forme d'un
+\textbf{diagramme de Gantt}. Les losanges correspondent aux réunions, aux présentations ou aux
+jalons importants. Les dates indiquées reposent sur les réunions
+d'encadrement, l'historique Git et les dates de modification des principaux
+scripts.
+
+\begin{landscape}
+\begin{figure}[p]
+\centering
+\scriptsize
+
+\begin{ganttchart}[
+    x unit=0.34cm,
+    y unit title=0.62cm,
+    y unit chart=0.49cm,
+    title height=1,
+    bar height=0.38,
+    milestone height=0.38,
+    group height=0.26,
+    hgrid,
+    vgrid,
+    title label font=\bfseries\tiny,
+    bar label font=\tiny,
+    milestone label font=\tiny,
+    group label font=\bfseries\tiny,
+    bar label node/.append style={align=right,text width=6.3cm},
+    milestone label node/.append style={align=right,text width=6.3cm},
+    group label node/.append style={align=right,text width=6.3cm},
+    bar/.append style={fill=blue!45},
+    group/.append style={fill=blue!70},
+    milestone/.append style={fill=orange!80}
+]{1}{44}
+
+\gantttitle{Juin 2026}{30}
+\gantttitle{Juillet 2026}{14} \\
+
+\gantttitle{1--7 juin}{7}
+\gantttitle{8--14 juin}{7}
+\gantttitle{15--21 juin}{7}
+\gantttitle{22--28 juin}{7}
+\gantttitle{29 juin--5 juillet}{7}
+\gantttitle{6--12 juillet}{7}
+\gantttitle{13--14 juillet}{2} \\
+
+\ganttgroup
+{Phase 1 : compréhension du sujet et premier prototype}
+{1}{18} \\
+
+\ganttmilestone
+{Réunion de lancement et définition du sujet}
+{1} \\
+
+\ganttbar
+{Recherche d'informations, lecture d'articles et compréhension du sujet}
+{1}{11} \\
+
+\ganttbar
+{Exploration de SportDB~2.0 et premiers développements}
+{4}{11} \\
+
+\ganttbar
+{Premier prototype Random Forest appliqué uniquement à RUN}
+{7}{12} \\
+
+\ganttmilestone
+{Présentation du premier résultat RUN et validation de l'orientation}
+{12} \\
+
+\ganttgroup
+{Phase 2 : comparaison des modèles sur RUN}
+{18}{28} \\
+
+\ganttmilestone
+{Réunion de suivi : comparaison des modèles puis extension multi-sport}
+{18} \\
+
+\ganttmilestone
+{Création du dépôt Git et intégration du prototype}
+{19} \\
+
+\ganttbar
+{Structuration du pipeline de modélisation des états fonctionnels}
+{19}{20} \\
+
+\ganttbar
+{Comparaison Random Forest, MLP, LSTM, GRU et Transformer sur RUN}
+{20}{27} \\
+
+\ganttbar
+{Analyse des résultats RUN et du recall des différents états}
+{24}{28} \\
+
+\ganttbar
+{Recherche bibliographique complémentaire selon les besoins}
+{19}{28} \\
+
+\ganttgroup
+{Phase 3 : extension multi-sport et analyse des données}
+{29}{34} \\
+
+\ganttbar
+{Construction du corpus commun RUN, CYC, TRE et SKA}
+{29}{30} \\
+
+\ganttbar
+{Comparaison des cinq modèles dans l'expérience multi-sport}
+{29}{32} \\
+
+\ganttbar
+{Étude d'ablation sur l'inclusion de SKA}
+{29}{31} \\
+
+\ganttbar
+{Analyse des distributions et projection en composantes principales}
+{29}{32} \\
+
+\ganttbar
+{Diagnostic multi-sport et analyse de la séparabilité}
+{32}{34} \\
+
+\ganttgroup
+{Phase 4 : explicabilité, graphe de connaissances et HITL}
+{40}{41} \\
+
+\ganttbar
+{Validation des explications et comparaison entre SHAP et ANOVA}
+{40}{40} \\
+
+\ganttbar
+{Construction du graphe et calcul de la cohérence sémantique}
+{40}{40} \\
+
+\ganttbar
+{Mise en place du mécanisme Human-in-the-Loop}
+{40}{41} \\
+
+\ganttbar
+{Évaluation out-of-fold des explications et de la fiabilité}
+{41}{41} \\
+
+\ganttgroup
+{Phase 5 : rédaction et finalisation du rapport}
+{41}{44} \\
+
+\ganttbar
+{Rédaction du rapport et organisation des contributions}
+{41}{44} \\
+
+\ganttbar
+{Explication des résultats, des formules et des figures}
+{41}{44} \\
+
+\ganttbar
+{Vérification des scripts, des références et du document}
+{42}{44} \\
+
+\ganttmilestone
+{Finalisation et date de remise du rapport}
+{44}
+
+\end{ganttchart}
+
+\caption{Diagramme de Gantt présentant l'organisation chronologique du TER
+entre le 1\textsuperscript{er} juin et le 14 juillet 2026.}
+\label{fig:gantt_ter}
+\end{figure}
+\end{landscape}
+
+Le déroulement du projet montre une progression en cinq phases. La première
+phase a été consacrée à la compréhension du sujet, à la consultation de la
+littérature scientifique et à la création d'un premier prototype sur RUN.
+La présentation du 12 juin a permis de vérifier la faisabilité de la
+classification des états physiologiques avec un Random Forest.
+
+La réunion du 18 juin a ensuite conduit à élargir l'étude. Le travail a alors
+porté sur la comparaison de cinq familles de modèles : Random Forest,
+Multilayer Perceptron, Long Short-Term Memory, Gated Recurrent Unit et
+Transformer. Cette comparaison a d'abord été réalisée sur RUN, avant d'être
+étendue à plusieurs sports.
+
+À partir du 29 juin, la contribution a été complétée par la construction du
+corpus multi-sport, l'étude d'ablation, l'analyse des distributions et les
+mesures de séparabilité. Ces expériences ont permis d'étudier l'influence de
+l'architecture du modèle ainsi que celle de la structure des données.
+
+Le 10 juillet, le travail a été poursuivi avec la partie explicabilité. Les
+prédictions du Random Forest ont été étudiées avec SHAP, puis reliées à un
+graphe de connaissances. La confiance prédictive et la cohérence sémantique
+ont enfin été combinées dans un mécanisme Human-in-the-Loop.
+
+La dernière phase, du 11 au 14 juillet, a été consacrée à la rédaction, à
+l'explication détaillée de la méthode et des résultats, ainsi qu'à la
+vérification de la cohérence générale du rapport. Cette chronologie montre que
+la contribution finale résulte d'une évolution progressive, depuis un premier
+classifieur appliqué à RUN jusqu'à une chaîne complète permettant de prédire,
+d'expliquer et d'orienter les décisions vers un contrôle humain.
+
+
+% Méthodologie
+
+\section{Méthodologie et plan expérimental}
+\label{sec:methodologie}
+
+\subsection{Chaîne de traitement complète}
+
+La figure~\ref{fig:pipeline} résume notre pipeline. Elle se lit de gauche à
+droite. Le premier bloc contient les signaux bruts HR, BR et RR. Le deuxième
+bloc réalise le fenêtrage et construit soit un vecteur statistique, soit une
+séquence. Le troisième bloc correspond aux cinq modèles de classification. Le
+quatrième bloc explique la décision du Random Forest avec SHAP. Le cinquième
+bloc relie les variables importantes aux concepts physiologiques du graphe de
+connaissances. Le dernier bloc combine confiance et cohérence pour produire la
+décision HITL.
+
+\begin{figure}[H]
+\centering
+\safeincludegraphics[width=0.96\linewidth]
+{outputs_validation/4_pipeline_summary.png}
+\caption{Chaîne complète proposée : acquisition des signaux, fenêtrage,
+classification, explication SHAP, mise en relation sémantique et décision HITL.}
+\label{fig:pipeline}
+\end{figure}
+
+Cette figure met en évidence la contribution centrale du TER : les résultats
+du classifieur ne sont pas considérés comme une fin. Ils sont transmis à deux
+modules supplémentaires, l'explication et la qualification de fiabilité, afin
+de produire une sortie compréhensible et contrôlable.
+
+\subsection{Prétraitement et normalisation}
+
+Le chargement parcourt les dossiers de sport, de groupe et de séance. Les
+tableaux MATLAB sont convertis en nombres flottants. Les annotations du fichier
+\texttt{TrNote.txt} permettent ensuite d'associer chaque portion du signal à
+un état fonctionnel.
+
+Les fichiers incomplets, les fenêtres trop courtes et les valeurs non finies
+sont exclus. Pour empêcher une variable numériquement grande de dominer les
+autres, les données sont standardisées\openaccessref{6}{https://www.deeplearningbook.org} :
+
+\begin{equation}
+x'_{i,j}
+=
+\frac{x_{i,j}-\mu^{\mathrm{train}}_j}
+{\sigma^{\mathrm{train}}_j}.
+\label{eq:standardization}
+\end{equation}
+
+Dans l'équation~\ref{eq:standardization}, $x_{i,j}$ est la valeur de la
+variable $j$ pour la fenêtre $i$. La moyenne
+$\mu^{\mathrm{train}}_j$ et l'écart-type
+$\sigma^{\mathrm{train}}_j$ sont calculés uniquement sur le train. La valeur
+standardisée $x'_{i,j}$ indique alors combien d'écarts-types la mesure se
+situe au-dessus ou au-dessous de la moyenne d'entraînement. Le groupe de test
+n'intervient jamais dans le calcul de l'outil de standardisation, appelé
+\emph{scaler} en apprentissage automatique.
+
+\subsection{Modèles comparés}
+
+Les cinq modèles sont évalués sur les mêmes plis. Le
+tableau~\ref{tab:model_config} résume leur rôle.
+
+\begin{table}[H]
+\centering
+\caption{Modèles utilisés et information exploitée par chacun.}
+\label{tab:model_config}
+\begin{tabularx}{\linewidth}{lXX}
+\toprule
+\textbf{Modèle} & \textbf{Entrée} & \textbf{Principe} \\
+\midrule
+Random Forest
+& 9 variables statistiques
+& Agrégation de 200 à 250 arbres selon l'expérience, profondeur maximale 8,
+minimum 3 observations par feuille et pondération des classes. \\
+
+Multilayer Perceptron
+& 9 variables statistiques
+& Réseau dense qui apprend des combinaisons non linéaires des neuf variables,
+avec activation \emph{Rectified Linear Unit} (ReLU, unité linéaire rectifiée)\openaccessref{6}{https://www.deeplearningbook.org}, sortie softmax et arrêt anticipé. \\
+
+Long Short-Term Memory
+& Séquences de 50 échantillons
+& Réseau récurrent à mémoire qui suit l'évolution du signal dans la fenêtre. \\
+
+Gated Recurrent Unit
+& Séquences de 50 échantillons
+& Réseau récurrent compact utilisant des portes de mise à jour et de
+réinitialisation. \\
+
+Transformer
+& Séquences de 50 échantillons
+& Modèle d'auto-attention qui compare directement les positions de la
+séquence et utilise un encodage de leur ordre. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La sortie \emph{softmax} transforme les scores du réseau en probabilités dont
+la somme vaut 1. La classe ayant la probabilité la plus élevée devient la
+classe prédite. L'arrêt anticipé, ou \emph{early stopping}\openaccessref{6}{https://www.deeplearningbook.org}, interrompt
+l'entraînement lorsqu'aucune amélioration suffisante n'est observée, afin de
+limiter le surapprentissage et le temps de calcul.
+
+\subsection{Validation Leave-One-Subject-Out}
+
+Pour un groupe $g$, l'ensemble de test est défini par :
+
+\begin{equation}
+\mathcal{D}^{(g)}_{\mathrm{test}}
+=
+\left\{
+(\mathbf{x}_i,y_i)
+\mid
+group_i=g
+\right\}.
+\label{eq:loso}
+\end{equation}
+
+Dans l'équation~\ref{eq:loso}, $\mathbf{x}_i$ est l'entrée de la fenêtre $i$,
+$y_i$ sa vraie classe et $group_i$ son groupe. Toutes les fenêtres du groupe
+$g$ sont placées dans le test. Les autres groupes forment le train. La
+procédure est répétée jusqu'à ce que chaque groupe ait été utilisé une fois
+comme test.
+
+Cette validation réduit le risque de fuite entre fenêtres voisines et permet
+d'estimer la capacité du modèle à généraliser à un groupe non observé pendant
+l'entraînement.
+
+\subsection{Métriques de classification}
+
+L'accuracy mesure la proportion totale de prédictions correctes :
+
+\begin{equation}
+\text{accuracy}
+=
+\frac{N_{\mathrm{correct}}}{N_{\mathrm{total}}},
+\label{eq:accuracy}
+\end{equation}
+
+où $N_{\mathrm{correct}}$ est le nombre de fenêtres bien classées et
+$N_{\mathrm{total}}$ le nombre de fenêtres testées.
+
+Le recall d'une classe $k$ mesure la part des vraies fenêtres de cette classe
+qui ont été retrouvées :
+
+\begin{equation}
+\text{recall}_k
+=
+\frac{TP_k}{TP_k+FN_k}.
+\label{eq:recall}
+\end{equation}
+
+$TP_k$, pour \emph{True Positives}, désigne les fenêtres de la classe $k$
+correctement reconnues. $FN_k$, pour \emph{False Negatives}, désigne les
+fenêtres de cette classe attribuées par erreur à une autre classe. Un recall
+élevé est donc important lorsqu'on cherche à ne pas manquer un état.
+
+La matrice de confusion place les vraies classes sur un axe et les classes
+prédites sur l'autre. Les valeurs de la diagonale correspondent aux bonnes
+prédictions ; les cases hors diagonale indiquent les confusions.
+
+Deux agrégations de l'accuracy sont distinguées :
+
+\begin{itemize}[leftmargin=1.5em]
+  \item la moyenne des accuracies des plis, où chaque groupe compte autant ;
+  \item l'accuracy poolée, où chaque fenêtre compte autant.
+\end{itemize}
+
+Ces valeurs peuvent être différentes lorsqu'un groupe contient beaucoup plus
+de fenêtres qu'un autre.
+
+\subsection{Tests statistiques}
+
+Le test de Friedman\openaccessref{15}{https://www.jmlr.org/papers/volume7/demsar06a/demsar06a.pdf} compare les rangs des cinq modèles sur les mêmes groupes.
+Son hypothèse nulle affirme qu'aucun modèle ne se distingue globalement. Une
+$p$-value supérieure à 0,05 signifie que les différences observées ne
+permettent pas de rejeter cette hypothèse au seuil de 5\,\%.
+
+Le test de Wilcoxon\openaccessref{15}{https://www.jmlr.org/papers/volume7/demsar06a/demsar06a.pdf} compare deux conditions appariées, ici l'entraînement avec
+et sans SKA. Il tient compte du fait que les deux résultats proviennent des
+mêmes groupes de test. Demšar recommande ces tests non paramétriques pour
+comparer plusieurs classifieurs sur des ensembles appariés
+~\cite{demsar2006}.
+
+\subsection{Analyse de séparabilité}
+
+L'analyse de variance, ou \emph{Analysis of Variance} (ANOVA)\openaccessref{26}{https://www.itl.nist.gov/div898/handbook/prc/section4/prc431.htm}, vérifie si la
+moyenne d'une variable diffère entre les classes. Une statistique $F$ élevée
+indique que la variance entre classes est grande par rapport à la variance à
+l'intérieur des classes.
+
+Le score de Fisher\openaccessref{25}{https://arxiv.org/abs/1202.3725} utilisé pour une variable peut être résumé par :
+
+\begin{equation}
+F_{\mathrm{Fisher}}
+=
+\frac{\text{variance entre les classes}}
+{\text{variance à l'intérieur des classes}}.
+\label{eq:fisher}
+\end{equation}
+
+Une valeur élevée signifie que les centres des classes sont éloignés par
+rapport à leur dispersion.
+
+L'analyse en composantes principales, ou \emph{Principal Component Analysis}
+(PCA)\openaccessref{23}{https://arxiv.org/abs/1404.1100}, transforme les neuf variables en nouveaux axes. Le premier axe explique
+la plus grande part possible de la variance, puis le deuxième explique la
+plus grande part restante tout en étant perpendiculaire au premier. La PCA
+permet donc de projeter les fenêtres en deux dimensions pour observer les
+regroupements.
+
+Le score de silhouette\openaccessref{24}{https://wis.kuleuven.be/stat/robust/papers/publications-1987/rousseeuw-silhouettes-jcam-sciencedirectopenarchiv.pdf} d'une fenêtre $i$ est :
+
+\begin{equation}
+s(i)
+=
+\frac{b(i)-a(i)}
+{\max\{a(i),b(i)\}},
+\label{eq:silhouette}
+\end{equation}
+
+où $a(i)$ est la distance moyenne entre la fenêtre et les fenêtres de sa
+propre classe, et $b(i)$ la plus petite distance moyenne vers une autre
+classe. Un score proche de 1 indique une bonne séparation ; un score proche de
+0 indique un chevauchement ; un score négatif signifie que la fenêtre est en
+moyenne plus proche d'une autre classe.
+
+\subsection{Explications SHAP et graphe de connaissances}
+
+Le Random Forest est retenu pour la partie explicabilité parce qu'il obtient
+la meilleure moyenne LOSO multi-sport dans l'expérimentation et qu'il est
+compatible avec TreeSHAP. Pour une fenêtre, SHAP fournit une contribution
+$\phi_j$ pour chaque variable. Les contributions positives vers la classe
+prédite sont considérées comme des arguments de soutien.
+
+Le graphe de connaissances relie trois niveaux :
+
+\begin{enumerate}[leftmargin=1.8em]
+  \item les variables calculées, comme \texttt{mean\_HR} ;
+  \item les concepts physiologiques HR, BR et RR ;
+  \item les états fonctionnels repos, effort et récupération.
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\safeincludegraphics[width=0.96\linewidth]
+{outputs_explainability_kg/3_knowledge_graph.png}
+\caption{Graphe de connaissances utilisé pour traduire les variables
+statistiques en concepts physiologiques puis en états fonctionnels.}
+\label{fig:knowledge_graph}
+\end{figure}
+
+La figure~\ref{fig:knowledge_graph} se lit en suivant les arêtes entre les
+nœuds. Les nœuds représentant les variables sont reliés au signal dont elles
+proviennent. Les concepts HR, BR et RR sont ensuite reliés aux états auxquels
+ils peuvent contribuer. Le graphe n'apprend pas la prédiction à la place du
+modèle ; il organise l'explication dans un vocabulaire plus compréhensible.
+
+\subsection{Cohérence sémantique}
+
+Pour chaque sport et chaque état, des profils de référence sont calculés à
+partir des médianes du train. La médiane est la valeur qui partage les
+observations en deux moitiés et résiste mieux aux valeurs extrêmes qu'une
+moyenne.
+
+La cohérence sémantique est définie par :
+
+\begin{equation}
+C(\mathbf{x},\hat{y})
+=
+\frac{
+\sum_{j\in P(\mathbf{x},\hat{y})}
+|\phi_j|\,c_j(\mathbf{x},\hat{y})
+}{
+\sum_{j\in P(\mathbf{x},\hat{y})}
+|\phi_j|
+}.
+\label{eq:consistency}
+\end{equation}
+
+Dans cette formule :
+
+\begin{itemize}[leftmargin=1.5em]
+  \item $\mathbf{x}$ est la fenêtre analysée ;
+  \item $\hat{y}$ est la classe prédite ;
+  \item $P(\mathbf{x},\hat{y})$ contient au plus les cinq variables qui
+  soutiennent le plus cette classe ;
+  \item $|\phi_j|$ est l'importance absolue de la contribution SHAP ;
+  \item $c_j(\mathbf{x},\hat{y})$ est la similarité entre la valeur observée
+  et le profil de l'état prédit.
+\end{itemize}
+
+La formule réalise une moyenne pondérée. Une variable très importante selon
+SHAP compte davantage qu'une variable secondaire. Le score final est compris
+entre 0 et 1 : une valeur élevée signifie que les arguments principaux du
+modèle sont proches du profil appris pour l'état annoncé.
+
+Lorsqu'un sport ne contient pas les trois états, des profils globaux calculés
+sur le train sont utilisés. Cette précaution évite qu'un sport ne possédant
+qu'une seule classe obtienne automatiquement une cohérence parfaite.
+
+\subsection{Fiabilité et décisions Human-in-the-Loop}
+
+La confiance du modèle pour la classe choisie est notée $p_i$ et la cohérence
+sémantique $C_i$. La fiabilité est définie par :
+
+\begin{equation}
+R_i=\sqrt{p_iC_i}.
+\label{eq:reliability}
+\end{equation}
+
+Le produit $p_iC_i$ impose que les deux composantes soient élevées. Une forte
+confiance ne suffit pas si l'explication est incohérente, et une bonne
+cohérence ne suffit pas si le modèle hésite. La racine carrée maintient le
+score dans l'intervalle $[0,1]$ et correspond à une moyenne géométrique.
+
+Les catégories sont définies par :
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textsc{accept} si $p_i\geq 0{,}75$ et $C_i\geq 0{,}70$ : la
+  prédiction est suffisamment confiante et cohérente pour être placée dans le
+  groupe le plus fiable ;
+  \item \textsc{check} si $p_i\geq 0{,}55$ et $C_i\geq 0{,}45$ : la
+  prédiction paraît exploitable mais mérite un contrôle rapide ;
+  \item \textsc{review} dans les autres cas : la décision est orientée vers
+  une vérification humaine complète.
+\end{itemize}
+
+Ces seuils sont expérimentaux. Ils ne constituent ni une norme clinique ni
+une garantie générale.
+
+\subsection{Explicabilité entièrement out-of-fold}
+
+Dans l'évaluation finale, le modèle, le scaler, les profils, les valeurs SHAP
+et la décision HITL sont recalculés dans chaque pli LOSO. Une fenêtre du groupe
+test est donc prédite et expliquée sans avoir servi à construire le modèle ou
+les profils de référence.
+
+Cette étape est une contribution méthodologique importante du TER. Elle évite
+de mesurer la qualité des explications sur des données déjà utilisées pendant
+l'entraînement et rend la comparaison entre confiance, cohérence et erreur
+plus réaliste.
+
+% Expériences
+
+\section{Expériences, résultats et interprétation}
+\label{sec:experiences}
+
+\subsection{Reconnaissance détaillée des six états de RUN}
+
+Cette première expérience étudie la course à pied avec six états. Les cinq
+modèles sont entraînés et testés sur les mêmes dix plis LOSO. L'objectif est
+de vérifier si l'information temporelle aide à distinguer des phases d'effort
+proches.
+
+\begin{figure}[H]
+\centering
+\safeincludegraphics[width=0.78\linewidth]
+{outputs_dl/confusion_RandomForest.png}
+\caption{Matrice de confusion LOSO du Random Forest sur les six états de RUN.}
+\label{fig:run_confusion}
+\end{figure}
+
+Pour lire la figure~\ref{fig:run_confusion}, il faut comparer la vraie classe
+et la classe prédite. Les cases de la diagonale correspondent aux fenêtres
+correctement classées. Une case située hors de la diagonale indique qu'un état
+a été confondu avec un autre. Plus la couleur est intense, plus le nombre ou
+la proportion de fenêtres concernées est important.
+
+La diagonale est plus marquée pour les états les plus distincts, tandis que
+les phases d'effort voisines se mélangent davantage. Cette observation est
+cohérente avec le protocole : l'initiation, l'effort intense, l'effort soutenu
+et la charge maximale appartiennent à une même séance et peuvent partager des
+niveaux de HR, BR et RR proches. La matrice permet donc de voir précisément
+où l'accuracy globale est perdue.
+
+\begin{table}[H]
+\centering
+\caption{Accuracy LOSO sur RUN à six états.}
+\label{tab:run_models}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Modèle} & \textbf{Accuracy moyenne} & \textbf{Écart-type} \\
+\midrule
+Random Forest & 0,554 & 0,097 \\
+MLP           & 0,555 & 0,071 \\
+LSTM          & 0,547 & 0,085 \\
+GRU           & \textbf{0,584} & 0,125 \\
+Transformer   & 0,549 & 0,114 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+L'accuracy moyenne du GRU est la plus élevée, avec 0,584, soit environ
+58,4\,\% de prédictions correctes en moyenne par pli. L'écart-type de 0,125
+montre cependant que les performances changent fortement d'un groupe à
+l'autre. Le test de Friedman donne $\chi^2=2{,}40$ et $p=0{,}66$. Comme la
+$p$-value est largement supérieure à 0,05, les écarts ne permettent pas de
+conclure qu'une architecture domine globalement les autres.
+
+L'accuracy seule peut masquer un avantage limité à une classe. Le
+tableau~\ref{tab:run_s2_recall} présente donc le recall de l'état $S_2$.
+
+\begin{table}[H]
+\centering
+\caption{Recall de l'état $S_2$, correspondant à l'effort intense.}
+\label{tab:run_s2_recall}
+\begin{tabular}{lc}
+\toprule
+\textbf{Modèle} & \textbf{Recall de $S_2$} \\
+\midrule
+Random Forest & 30,2\,\% \\
+MLP           & 16,5\,\% \\
+LSTM          & 52,8\,\% \\
+GRU           & 52,8\,\% \\
+Transformer   & \textbf{54,2\,\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Le Transformer retrouve 54,2\,\% des vraies fenêtres $S_2$, contre 30,2\,\%
+pour le Random Forest et 16,5\,\% pour le MLP. Les trois modèles séquentiels
+dépassent ici les modèles tabulaires. Cela suggère que l'ordre des valeurs
+dans les 50 échantillons contient une information utile pour reconnaître
+l'effort intense, même si ce gain local ne suffit pas à améliorer
+significativement l'accuracy totale.
+
+\begin{figure}[H]
+\centering
+\safeincludegraphics[width=0.90\linewidth]
+{outputs_dl/1_model_comparison.png}
+\caption{Comparaison des cinq modèles sur RUN ; les barres résument leur
+performance moyenne et leur variabilité entre groupes.}
+\label{fig:run_model_comparison}
+\end{figure}
+
+Dans la figure~\ref{fig:run_model_comparison}, la hauteur de chaque barre
+représente la performance moyenne. Les barres d'erreur représentent la
+variabilité entre plis. Les intervalles se chevauchent fortement, ce qui
+explique pourquoi le test de Friedman n'identifie pas de différence globale
+significative. Le graphique doit donc être lu avec le tableau des recalls :
+la moyenne générale est proche, mais le comportement par classe diffère.
+
+\subsection{Comparaison multi-sport}
+
+L'expérience multi-sport utilise les états repos, effort et récupération et
+32 groupes LOSO. Le tableau~\ref{tab:multisport_models} présente, pour chaque
+modèle, la moyenne, l'écart-type, le minimum et le maximum observés entre les
+groupes.
+
+\begin{table}[H]
+\centering
+\caption{Résultats LOSO moyens sur le corpus multi-sport.}
+\label{tab:multisport_models}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Modèle} &
+\textbf{Moyenne} &
+\textbf{Écart-type} &
+\textbf{Minimum} &
+\textbf{Maximum} \\
+\midrule
+Random Forest & \textbf{0,7995} & 0,1838 & 0,3973 & 1,0000 \\
+MLP           & 0,7827 & 0,1905 & 0,3868 & 1,0000 \\
+LSTM          & 0,7105 & 0,2268 & 0,2049 & 1,0000 \\
+GRU           & 0,7509 & 0,2068 & 0,2643 & 1,0000 \\
+Transformer   & 0,7645 & 0,1909 & 0,3252 & 0,9873 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Le Random Forest obtient la meilleure moyenne, 0,7995. Cette valeur ne
+signifie pas que 79,95\,\% de toutes les fenêtres sont correctes : elle est la
+moyenne non pondérée des 32 accuracies de plis. Chaque groupe compte donc
+autant, quelle que soit sa taille.
+
+Les minimums proches de 0,20 à 0,40 et les maximums proches de 1 montrent une
+forte hétérogénéité. Certains groupes sont presque entièrement reconnus,
+d'autres sont très difficiles. Le test de Friedman donne
+$\chi^2=4{,}15$ et $p=0{,}39$ ; aucune supériorité globale n'est donc
+démontrée au seuil de 5\,\%.
+
+\begin{figure}[H]
+\centering
+\safeincludegraphics[width=0.88\linewidth]
+{outputs_dl_multisport/1_model_comparison_multisport.png}
+\caption{Accuracy LOSO moyenne des cinq architectures sur le corpus
+multi-sport.}
+\label{fig:multisport_comparison}
+\end{figure}
+
+La figure~\ref{fig:multisport_comparison} donne une vue immédiate du classement
+moyen. Le Random Forest et le MLP apparaissent légèrement au-dessus, mais les
+barres d'erreur sont grandes et se recouvrent. Le graphique confirme donc que
+la variabilité entre groupes est plus forte que la différence moyenne entre
+architectures.
+
+\begin{figure}[H]
+\centering
+\safeincludegraphics[width=0.94\linewidth]
+{outputs_dl_multisport/4_per_sport_accuracy.png}
+\caption{Accuracy des modèles selon la discipline du groupe testé.}
+\label{fig:per_sport_accuracy}
+\end{figure}
+
+Dans la figure~\ref{fig:per_sport_accuracy}, chaque groupe de barres correspond
+à un sport. La comparaison verticale indique le niveau de performance dans ce
+sport ; la comparaison horizontale montre comment les modèles changent d'une
+discipline à l'autre. RUN et CYC sont souvent mieux reconnus. Dans les données
+préparées pour cette expérimentation, SKA reste proche de 0,40 pour plusieurs
+modèles, tandis que TRE présente des groupes très faciles et d'autres plus
+difficiles.
+
+Le Transformer obtient le meilleur recall de la récupération, avec
+35,7\,\%, devant le GRU à 33,2\,\%, le Random Forest à 29,7\,\%, le LSTM à
+28,8\,\% et le MLP à 12,1\,\%. Comme dans RUN, l'information temporelle semble
+donc utile pour une classe précise sans produire de domination globale.
+
+Deux accuracies doivent être distinguées :
+
+\begin{itemize}[leftmargin=1.5em]
+  \item 0,7995 est la moyenne des 32 accuracies de plis ;
+  \item 0,6995 est l'accuracy poolée sur les 6\,821 prédictions out-of-fold.
+\end{itemize}
+
+L'accuracy poolée se calcule en réunissant toutes les fenêtres de test. Les
+grands groupes pèsent alors davantage. Les groupes SKA contiennent beaucoup de
+fenêtres et obtiennent de faibles performances dans cette version ; ils
+abaissent donc davantage la valeur poolée que la moyenne par pli.
+
+\subsection{Analyse de séparabilité}
+
+L'analyse de séparabilité cherche à savoir si les classes sont déjà distinctes
+dans les variables d'entrée, avant même de choisir un modèle complexe.
+
+\begin{figure}[H]
+\centering
+\safeincludegraphics[width=0.96\linewidth]
+{outputs_distribution_analysis/2_pca_projection.png}
+\caption{Projection PCA des fenêtres ; chaque point représente une fenêtre et
+les deux axes résument 73,4\,\% de la variance totale.}
+\label{fig:pca}
+\end{figure}
+
+Dans la figure~\ref{fig:pca}, chaque point est une fenêtre décrite par neuf
+variables. Les axes horizontaux et verticaux ne sont pas des signaux
+physiologiques directs : ce sont deux combinaisons linéaires produites par la
+PCA. Des points proches possèdent des profils statistiques proches. La forme
+ou la couleur permet de distinguer l'état et le sport.
+
+Les deux premières composantes expliquent 73,4\,\% de la variance. La
+projection conserve donc une grande partie, mais pas la totalité, de
+l'information. Les regroupements apparaissent fortement structurés par sport,
+ce qui montre que la discipline influence la distribution des variables. La
+PCA est une visualisation : elle suggère des tendances, mais ne prouve pas à
+elle seule qu'une classe est prédictible.
+
+\begin{table}[H]
+\centering
+\caption{Indicateurs de séparabilité calculés par sport.}
+\label{tab:separability}
+\begin{tabular}{lrrrl}
+\toprule
+\textbf{Sport} &
+\textbf{Silhouette} &
+\textbf{Fisher HR} &
+\textbf{ANOVA mean\_HR} &
+\textbf{Interprétation} \\
+\midrule
+RUN & $+0,439$ & 7,445 & 3264,33 & séparation nette \\
+CYC & $+0,174$ & 2,313 & 243,88  & séparation modérée \\
+SKA & $-0,051$ & 0,014 & 17,76   & fort chevauchement \\
+TRE & N/A      & N/A   & N/A     & un seul état \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+RUN possède le meilleur score de silhouette et le plus grand score de Fisher
+sur HR. Cela signifie que ses états sont relativement éloignés par rapport à
+leur dispersion interne. CYC présente une séparation plus faible mais encore
+positive. Dans la version expérimentale étudiée, SKA obtient une silhouette
+légèrement négative et un Fisher HR proche de zéro, ce qui indique un
+chevauchement important des classes dans les variables disponibles. Pour TRE,
+ces mesures ne sont pas définies car un seul état est présent dans l'espace
+commun.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.48\linewidth}
+\centering
+\safeincludegraphics[width=\linewidth]
+{outputs_separability/3_silhouette_scores.png}
+\caption{Score de silhouette.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.48\linewidth}
+\centering
+\safeincludegraphics[width=\linewidth]
+{outputs_separability/4_fisher_hr.png}
+\caption{Score de Fisher calculé sur HR.}
+\end{subfigure}
+\caption{Deux lectures complémentaires de la séparabilité des états.}
+\label{fig:silhouette_fisher}
+\end{figure}
+
+Le graphique de gauche de la figure~\ref{fig:silhouette_fisher} mesure la
+cohésion globale des classes dans l'espace standardisé. Le graphique de
+droite se concentre uniquement sur la variable HR. Le fait que les deux
+indicateurs donnent le même ordre général renforce l'interprétation : la
+difficulté dépend fortement du sport et de la qualité de séparation des
+états.
+
+\begin{figure}[H]
+\centering
+\safeincludegraphics[width=0.94\linewidth]
+{outputs_separability/5_feature_ranking_heatmap.png}
+\caption{Classement des variables selon leur pouvoir séparateur dans chaque
+sport.}
+\label{fig:feature_ranking}
+\end{figure}
+
+La figure~\ref{fig:feature_ranking} est une carte de chaleur. Chaque ligne
+correspond à une variable et chaque colonne à un sport. L'intensité d'une case
+représente le rang ou le pouvoir séparateur de la variable. Elle montre que la
+même caractéristique n'est pas également utile partout : HR et RR dominent
+dans RUN, tandis que les variables respiratoires prennent plus de poids dans
+d'autres disciplines. Cette observation justifie l'analyse multi-sport et
+montre la limite d'une règle physiologique unique appliquée à toutes les
+disciplines.
+
+\subsection{Étude d'ablation de SKA}
+
+Une étude d'ablation retire volontairement un élément du pipeline pour mesurer
+son influence. Ici, le pool de test reste composé de RUN, CYC et TRE. Les
+modèles sont entraînés une première fois sans SKA, puis une seconde fois avec
+SKA.
+
+\begin{figure}[H]
+\centering
+\safeincludegraphics[width=0.94\linewidth]
+{outputs_ablation/ablation_ska_effect.png}
+\caption{Variation des performances lorsque SKA est ajouté aux données
+d'entraînement.}
+\label{fig:ablation}
+\end{figure}
+
+Dans la figure~\ref{fig:ablation}, une variation positive signifie que l'ajout
+de SKA améliore la métrique ; une variation négative signifie qu'elle baisse.
+L'ajout de SKA ne produit pas de changement significatif de l'accuracy globale
+des modèles. Le recall de la récupération du Random Forest diminue d'environ
+4,9 points avec $p=0{,}028$. Ce résultat doit rester prudent car plusieurs
+comparaisons sont réalisées. L'enseignement principal est que, dans cette
+expérimentation, SKA est surtout difficile à prédire lui-même et ne dégrade
+pas systématiquement tous les autres sports.
+
+\subsection{Importance SHAP et comparaison avec l'ANOVA}
+
+L'importance SHAP globale est obtenue en calculant, pour chaque variable, la
+moyenne de la valeur absolue de ses contributions. Une grande valeur signifie
+que la variable modifie souvent et fortement les prédictions, quel que soit le
+sens de cette modification.
+
+\begin{figure}[H]
+\centering
+\safeincludegraphics[width=0.84\linewidth]
+{outputs_explainability_kg/1_global_feature_importance.png}
+\caption{Importance SHAP globale des neuf variables du Random Forest
+multi-sport.}
+\label{fig:global_shap}
+\end{figure}
+
+Dans la figure~\ref{fig:global_shap}, la longueur d'une barre représente
+l'influence moyenne de la variable. Les trois premières sont
+\texttt{max\_BR}, \texttt{std\_BR} et \texttt{mean\_BR}. Elles sont suivies
+par \texttt{max\_HR}, \texttt{min\_RR} et \texttt{mean\_HR}. Ce classement
+décrit le comportement du modèle dans le corpus utilisé ; il ne constitue pas
+un classement physiologique universel.
+
+\begin{figure}[H]
+\centering
+\safeincludegraphics[width=0.94\linewidth]
+{outputs_validation/1_shap_anova_correlation.png}
+\caption{Relation entre l'importance SHAP du modèle et le F-score ANOVA de
+chaque variable.}
+\label{fig:shap_anova}
+\end{figure}
+
+Chaque point de la figure~\ref{fig:shap_anova} correspond à une variable.
+L'axe horizontal représente sa séparabilité univariée selon l'ANOVA et l'axe
+vertical son utilisation par le Random Forest selon SHAP. Si les deux mesures
+donnaient le même classement, les points suivraient une tendance croissante.
+
+La corrélation de Pearson vaut $r=-0,047$ avec $p=0,904$, et la corrélation de
+Spearman vaut $\rho=0,267$ avec $p=0,488$. Ces valeurs indiquent l'absence
+d'association forte. Ce n'est pas une contradiction : l'ANOVA étudie une
+variable isolée, alors que SHAP mesure son rôle dans une décision
+multivariée, en interaction avec les autres variables.
+
+\subsection{Cohérence sémantique}
+
+Sur le modèle descriptif ajusté à l'ensemble du corpus, la cohérence moyenne
+vaut 0,368 pour le repos, 0,612 pour l'effort et 0,374 pour la récupération.
+Ces nombres décrivent la proximité entre les variables qui soutiennent la
+prédiction et les profils construits pour la classe annoncée.
+
+\begin{figure}[H]
+\centering
+\safeincludegraphics[width=0.90\linewidth]
+{outputs_explainability_kg/4_consistency_and_hitl.png}
+\caption{Cohérence sémantique par état et répartition initiale des catégories
+HITL.}
+\label{fig:consistency_hitl}
+\end{figure}
+
+La figure~\ref{fig:consistency_hitl} met en parallèle le score de cohérence et
+la décision opérationnelle. L'effort obtient la cohérence moyenne la plus
+élevée, ce qui indique que ses variables importantes sont plus souvent
+proches du profil appris. Le repos et la récupération sont plus ambigus. Ces
+valeurs sont descriptives et ne doivent pas être confondues avec
+l'évaluation out-of-fold finale.
+
+\subsection{Validation finale du mécanisme HITL}
+
+L'évaluation finale réunit les prédictions produites dans les 32 plis LOSO.
+L'accuracy poolée est de 0,6995.
+
+\begin{table}[H]
+\centering
+\caption{Fiabilité out-of-fold selon la décision HITL.}
+\label{tab:hitl_oof}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Décision} &
+\textbf{Fenêtres} &
+\textbf{Coverage} &
+\textbf{Accuracy} &
+\textbf{Risk} \\
+\midrule
+\textsc{accept} & 871   & 12,8\,\% & \textbf{1,000} & 0,000 \\
+\textsc{check}  & 2\,348 & 34,4\,\% & 0,971 & 0,029 \\
+\textsc{review} & 3\,602 & 52,8\,\% & 0,450 & 0,550 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La ligne \textsc{accept} signifie que 871 fenêtres, soit 12,8\,\% du corpus,
+respectent les seuils les plus exigeants. Dans cette expérimentation, elles
+sont toutes correctes. La ligne \textsc{check} contient 2\,348 fenêtres avec
+97,1\,\% d'accuracy. La catégorie \textsc{review} contient plus de la moitié
+du corpus et seulement 45,0\,\% de bonnes prédictions. Le mécanisme concentre
+donc les erreurs dans le groupe destiné à l'examen humain.
+
+\begin{figure}[H]
+\centering
+\safeincludegraphics[width=0.82\linewidth]
+{outputs_hitl_reliability/1_accuracy_by_hitl.png}
+\caption{Accuracy out-of-fold de chacune des trois catégories HITL.}
+\label{fig:hitl_accuracy}
+\end{figure}
+
+Dans la figure~\ref{fig:hitl_accuracy}, la hauteur des barres diminue de
+\textsc{accept} vers \textsc{review}. Cette hiérarchie est le comportement
+attendu d'un système sélectif. La taille des groupes doit cependant être lue
+avec le tableau : une accuracy élevée sur une petite catégorie ne signifie
+pas que tout le corpus est automatiquement fiable.
+
+Parmi les 871 fenêtres \textsc{accept}, 868 proviennent de TRE. L'accuracy de
+1,000 ne constitue donc pas une garantie uniforme pour RUN, CYC et SKA. Elle
+montre surtout que le score sélectionne un sous-ensemble TRE particulièrement
+homogène dans cette version expérimentale.
+
+\begin{figure}[H]
+\centering
+\safeincludegraphics[width=0.92\linewidth]
+{outputs_hitl_reliability/2_accuracy_by_sport_and_hitl.png}
+\caption{Répartition et accuracy des catégories HITL selon le sport.}
+\label{fig:hitl_by_sport}
+\end{figure}
+
+La figure~\ref{fig:hitl_by_sport} décompose les résultats précédents. Elle
+montre que la catégorie \textsc{accept} est surtout alimentée par TRE, que RUN
+et CYC possèdent principalement des prédictions \textsc{check}, et que SKA est
+orienté vers \textsc{review}. Ce graphique est indispensable pour éviter une
+lecture trop générale du taux de 100\,\%.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\safeincludegraphics[width=\linewidth]
+{outputs_hitl_reliability/3_risk_coverage_curve.png}
+\caption{Risk en fonction de la coverage.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\safeincludegraphics[width=\linewidth]
+{outputs_hitl_reliability/4_coverage_accuracy_tradeoff.png}
+\caption{Accuracy en fonction de la coverage.}
+\end{subfigure}
+\caption{Compromis entre quantité de prédictions automatisées et fiabilité.}
+\label{fig:risk_coverage}
+\end{figure}
+
+Les courbes de la figure~\ref{fig:risk_coverage} sont obtenues en classant les
+fenêtres par fiabilité puis en conservant une proportion croissante des
+meilleures. Au début, seules les prédictions les plus sûres sont gardées :
+l'accuracy est élevée et le risk faible. Lorsque la coverage augmente, des cas
+plus difficiles sont inclus et l'accuracy diminue.
+
+Les 25\,\% de prédictions les mieux classées atteignent 100\,\% d'accuracy.
+À environ 50\,\% de coverage, l'accuracy reste proche de 98\,\%. À 75\,\% de
+coverage, elle descend vers 82\,\%. Ces courbes montrent donc que le score de
+fiabilité ordonne les prédictions de manière utile pour répartir le travail
+entre automatisation et vérification humaine.
+
+% Difficultés rencontrées
+
+\section{Difficultés rencontrées et solutions apportées}
+\label{sec:difficultes}
+
+\subsection{Hétérogénéité de SportDB~2.0}
+
+La première difficulté a été de comprendre l'organisation réelle de
+SportDB~2.0. Les fichiers ne suivent pas tous exactement la même structure :
+les noms des champs MATLAB, les signaux disponibles et les annotations
+changent selon le sport et la séance. Certaines disciplines fournissent
+directement HR, RR et BR, alors que d'autres contiennent principalement des
+segments ECG.
+
+Une phase d'exploration a donc été nécessaire avant de construire le pipeline.
+Des scripts ont été utilisés pour parcourir l'arborescence, afficher les
+champs disponibles et comparer les annotations de chaque discipline. Cette
+étape a conduit à retenir RUN, CYC, TRE et SKA pour l'étude multi-sport, car
+leurs signaux pouvaient être ramenés à une représentation commune. Les sports
+ECG-only ont été laissés de côté afin de ne pas introduire une reconstruction
+des intervalles RR insuffisamment validée.
+
+\subsection{Harmonisation des protocoles et des états}
+
+Les protocoles sportifs n'utilisent pas les mêmes phases. RUN distingue
+plusieurs niveaux d'effort, tandis que d'autres disciplines utilisent des
+annotations plus générales. Une fusion directe de toutes les étiquettes aurait
+produit des classes incohérentes.
+
+Le choix retenu a été de conserver deux niveaux d'analyse. RUN est étudié
+séparément avec six états afin de préserver les transitions fines. Pour
+l'étude multi-sport, les annotations sont regroupées en trois états communs :
+repos, effort et récupération. Cette solution permet la comparaison entre
+disciplines, mais elle entraîne une perte de granularité qui est explicitement
+prise en compte dans l'interprétation des résultats.
+
+\subsection{Prévention des fuites de données}
+
+Le fenêtrage glissant produit plusieurs observations proches pour un même
+sujet. Une séparation aléatoire aurait pu placer des fenêtres très similaires
+à la fois dans le train et dans le test, donnant une estimation trop
+optimiste de l'accuracy.
+
+Pour éviter cette fuite de données, la validation est réalisée par groupe avec
+un protocole LOSO. Le scaler, les profils sémantiques et les explications SHAP
+sont recalculés dans chaque pli à partir du train uniquement. Cette contrainte
+a rendu l'implémentation plus longue, mais elle était nécessaire pour obtenir
+une évaluation plus réaliste sur des sujets non observés.
+
+\subsection{Comparaison de modèles de nature différente}
+
+Le Random Forest et le MLP utilisent des variables statistiques, alors que le
+LSTM, le GRU et le Transformer exploitent directement des séquences. La
+comparaison n'était donc pas immédiate : les modèles devaient partager les
+mêmes groupes de test, le même espace de classes et des conditions
+d'entraînement aussi proches que possible.
+
+Les architectures temporelles ont été gardées compactes et l'early stopping a
+été utilisé pour limiter le surapprentissage et le temps de calcul. Les mêmes
+plis LOSO ont été conservés pour tous les modèles. Les résultats ont ensuite
+été comparés avec l'accuracy globale, mais aussi avec le recall par classe,
+car un gain local sur un état important peut être masqué par la moyenne.
+
+\subsection{Construction de la cohérence sémantique}
+
+SHAP indique quelles variables soutiennent une prédiction, mais ne dit pas
+directement si cette explication est cohérente avec l'état annoncé. Il a donc
+fallu définir une mesure supplémentaire sans utiliser d'information provenant
+du groupe de test.
+
+La solution retenue consiste à construire, dans chaque pli, des profils
+statistiques à partir du train. Les principales contributions SHAP positives
+sont ensuite comparées à ces profils. La confiance du modèle et la cohérence
+sémantique sont combinées pour produire les catégories \textsc{accept},
+\textsc{check} et \textsc{review}. Les seuils restent une preuve de concept :
+ils servent à étudier le comportement du système et devront être recalibrés
+avant toute utilisation réelle.
+
+\subsection{Interprétation de résultats parfois contradictoires}
+
+Une dernière difficulté a été d'interpréter des résultats qui ne donnent pas
+toujours le même classement. Le GRU obtient la meilleure moyenne sur RUN, le
+Random Forest est premier en multi-sport, et le Transformer présente un
+meilleur recall sur certaines classes. De la même manière, SHAP et l'ANOVA ne
+classent pas les variables dans le même ordre.
+
+Ces différences n'ont pas été considérées comme des erreurs. Elles ont conduit
+à compléter l'accuracy par des analyses par classe, des tests statistiques et
+une étude de séparabilité. Cette démarche a permis de distinguer l'effet de
+l'architecture de celui de la qualité des données.
+
+
+% Discussion
+
+\section{Discussion : comparaison avec les travaux existants}
+\label{sec:discussion}
+
+\subsection{Comparaison avec les travaux sur la surveillance sportive}
+
+Claudino et al. montrent que l'intelligence artificielle est principalement
+utilisée dans le sport pour la prédiction de performance et du risque
+~\cite{claudino2019}. Notre travail se situe dans le même objectif général
+d'aide à la décision, mais se concentre sur une tâche différente : reconnaître
+l'état fonctionnel présent dans une portion de signaux cardio-respiratoires.
+La contribution n'est donc pas un score global de performance ou de blessure,
+mais une chaîne qui suit des phases successives d'une séance.
+
+Estrella et Capdevila utilisent la variabilité de la fréquence cardiaque, des
+modèles classiques et SHAP pour identifier des profils sportifs
+~\cite{estrella2025}. Comme eux, nous constatons que le Random Forest constitue
+un compromis intéressant entre performance et explicabilité. Notre approche
+ajoute cependant trois dimensions : la comparaison avec des modèles
+temporels, la prédiction d'états successifs et une décision HITL fondée sur la
+confiance et la cohérence.
+
+\subsection{Comparaison avec les travaux sur la validation entre sujets}
+
+Dehghani et al. insistent sur le risque d'une validation aléatoire lorsque des
+fenêtres chevauchantes d'un même sujet se retrouvent dans le train et le test
+~\cite{dehghani2019}. Notre protocole suit cette recommandation en séparant les
+groupes pendant l'évaluation.
+
+Notre contribution va plus loin que la seule accuracy : le scaler, les
+profils sémantiques, les valeurs SHAP et la catégorie HITL sont également
+recalculés dans chaque pli. Ainsi, l'explication et la fiabilité sont évaluées
+dans les mêmes conditions que la prédiction. Cette extension out-of-fold est
+importante, car une explication produite sur une fenêtre déjà vue pourrait
+sembler artificiellement plus cohérente.
+
+\subsection{Comparaison des modèles tabulaires et temporels}
+
+Les résultats ne montrent pas de domination globale significative du LSTM, du
+GRU ou du Transformer. Sur RUN, le GRU obtient la meilleure accuracy moyenne,
+mais la variabilité entre groupes empêche une conclusion générale. Ce résultat
+rappelle qu'une architecture plus complexe n'est pas automatiquement meilleure
+lorsque le nombre de groupes est limité.
+
+L'analyse par classe apporte néanmoins une différence importante. Les modèles
+temporels doublent presque le recall de l'effort intense par rapport aux
+modèles tabulaires. Leur intérêt apparaît donc surtout dans les transitions,
+où l'ordre des valeurs peut contenir une information perdue par les moyennes
+et les écarts-types.
+
+Dans l'étude multi-sport, les quatre phases d'effort de RUN sont fusionnées.
+Cette simplification rend la cible commune aux sports, mais supprime une
+partie de la granularité sur laquelle les réseaux temporels étaient utiles.
+La comparaison RUN/multi-sport constitue ainsi une contribution analytique :
+elle montre que le choix des classes peut modifier l'avantage attendu d'une
+architecture.
+
+\subsection{Comparaison avec les travaux d'explicabilité en sport}
+
+La revue de Kranzinger et al. montre que SHAP domine actuellement l'XAI en
+science du sport, tandis que les explications fondées sur des connaissances
+du domaine et les évaluations centrées sur l'utilisateur restent limitées
+~\cite{kranzinger2025}. La revue de Shen et al. aboutit à un constat proche
+pour les signaux physiologiques : l'explicabilité locale et globale progresse,
+mais la validation et la mise en contexte restent difficiles
+~\cite{shen2025}.
+
+Notre pipeline reprend SHAP parce qu'il fournit une attribution locale et une
+importance globale. Il ne s'arrête cependant pas au classement des variables.
+Les contributions sont reliées aux concepts HR, BR et RR, puis comparées à des
+profils d'état. Le score de cohérence répond donc à une question que SHAP seul
+ne traite pas : les variables qui poussent la décision sont-elles proches de
+ce qui a été appris pour la classe prédite ?
+
+Cette contribution reste limitée. Le graphe et les profils n'ont pas encore
+été validés par un médecin du sport ou un préparateur physique. Notre travail
+répond donc partiellement au manque identifié par Kranzinger et al., mais une
+évaluation avec des utilisateurs du domaine reste nécessaire.
+
+\subsection{Comparaison avec les graphes de connaissances}
+
+Hogan et al. présentent les graphes de connaissances comme un moyen de
+structurer des faits et des relations~\cite{hogan2020}. Rotmensch et al. les
+utilisent dans un contexte de santé pour organiser des concepts issus de
+données médicales~\cite{rotmensch2017}. Lecue insiste sur leur rôle potentiel
+dans l'explication de systèmes d'intelligence artificielle
+~\cite{lecue2020}.
+
+Notre graphe est plus léger qu'une ontologie médicale. Il ne contient ni
+raisonnement clinique complet ni règles universelles. Son apport est
+opérationnel : il traduit une variable technique comme \texttt{std\_BR} en un
+concept respiratoire et relie ce concept à l'état fonctionnel. Il constitue
+donc une couche intermédiaire entre le calcul SHAP et l'explication destinée à
+l'utilisateur.
+
+\subsection{Comparaison avec la classification sélective et le HITL}
+
+Geifman et El-Yaniv proposent de sélectionner les prédictions à partir de la
+confiance du modèle~\cite{geifman2017}. Wu et al. montrent plus généralement
+que le HITL peut attribuer à un humain les cas pour lesquels le modèle est
+insuffisant~\cite{wu2021}.
+
+Notre approche conserve ce principe, mais ne repose pas uniquement sur la
+probabilité maximale. Une prédiction doit également présenter une cohérence
+sémantique suffisante. Cette combinaison est l'une des principales
+contributions du TER : un modèle très confiant peut être orienté vers
+\textsc{review} si les arguments qui soutiennent sa décision sont éloignés du
+profil appris.
+
+Les résultats out-of-fold montrent une séparation nette entre
+\textsc{accept}, \textsc{check} et \textsc{review}. Ils doivent cependant être
+lus avec la distribution par sport. La majorité des \textsc{accept} provient
+de TRE ; le système sélectionne donc bien un sous-ensemble facile, mais ne
+garantit pas la même couverture pour chaque discipline.
+
+\subsection{Apport global de notre contribution}
+
+Par rapport aux travaux étudiés, notre contribution combine dans un même
+prototype :
+
+\begin{itemize}[leftmargin=1.5em]
+  \item des signaux physiologiques issus de plusieurs sports ;
+  \item une comparaison entre modèles tabulaires et temporels sur les mêmes
+  fenêtres de 50 échantillons ;
+  \item une validation par groupe ;
+  \item une analyse des performances et de la séparabilité ;
+  \item une explication locale et globale avec SHAP ;
+  \item une représentation sémantique des variables ;
+  \item une cohérence calculée à partir des profils du train ;
+  \item une décision HITL évaluée out-of-fold.
+\end{itemize}
+
+L'originalité se situe donc dans l'intégration de ces éléments, plutôt que
+dans la création d'un nouveau classifieur. Cette chaîne permet de passer de
+« le modèle prédit effort » à une sortie plus complète : « le modèle prédit
+effort avec telle confiance, principalement à cause de telles variables, avec
+tel niveau de cohérence, et recommande telle action humaine ».
+
+\subsection{Limites}
+
+Les principales limites sont les suivantes :
+
+\begin{itemize}[leftmargin=1.5em]
+  \item le corpus multi-sport ne contient que 32 groupes dans la version
+  expérimentale ;
+  \item les protocoles, les capteurs et les durées diffèrent entre sports ;
+  \item TRE ne contient qu'un seul état dans l'espace commun ;
+  \item l'harmonisation à trois états masque la granularité de RUN ;
+  \item certaines variables respiratoires sont absentes ou peu informatives
+  selon les disciplines ;
+  \item le module SHAP explique le Random Forest et non directement le LSTM,
+  le GRU ou le Transformer ;
+  \item les profils sémantiques sont appris dans le corpus et ne constituent
+  pas des normes médicales ;
+  \item les seuils HITL sont des choix de preuve de concept ;
+  \item les graphiques et explications n'ont pas encore été évalués avec des
+  entraîneurs ou des spécialistes du sport ;
+  \item aucune validation externe sur un second corpus n'a été réalisée.
+\end{itemize}
+
+% Conclusion
+
+\section{Conclusion et perspectives}
+\label{sec:conclusion}
+
+\subsection{Bilan}
+
+Ce TER a permis de concevoir une chaîne complète allant des signaux
+cardio-respiratoires à une prédiction explicable et contrôlable. Le travail ne
+s'est pas limité à comparer cinq modèles. Il a également étudié la
+séparabilité des données, les contributions des variables, leur mise en
+relation avec des concepts physiologiques et la sélection des cas nécessitant
+une vérification humaine.
+
+Sur RUN, aucune architecture ne domine significativement l'accuracy globale.
+Les modèles temporels améliorent toutefois nettement le recall de l'effort
+intense. Ce résultat montre que l'ordre des 50 échantillons peut apporter une
+information réelle pour certaines transitions.
+
+L'étude multi-sport met en évidence une forte influence de la discipline et de
+la séparabilité des variables. Le Random Forest obtient la meilleure moyenne
+LOSO dans l'expérimentation, mais les écarts entre groupes restent importants.
+L'analyse des graphes permet de voir que la difficulté ne provient pas
+uniquement du choix du modèle.
+
+SHAP fournit les variables qui soutiennent chaque décision. Le graphe de
+connaissances traduit ces variables en concepts HR, BR et RR. La cohérence
+sémantique complète ensuite la confiance prédictive. Enfin, le mécanisme HITL
+classe les fenêtres en \textsc{accept}, \textsc{check} ou \textsc{review} et
+concentre les erreurs dans la catégorie destinée au contrôle humain.
+
+\subsection{Réponse à la problématique}
+
+Il est possible de construire un système qui reconnaît des états
+physiologiques dans des données multi-sport tout en affichant les raisons
+principales de la décision et son niveau de fiabilité. La qualité de cette
+reconnaissance dépend toutefois du protocole, de la définition des états, du
+nombre de groupes et de la séparabilité des signaux.
+
+La contribution principale n'est donc pas un classifieur universel. Il s'agit
+d'une méthode intégrée pour :
+
+\[
+\boxed{
+\begin{gathered}
+\text{prédire}
+\;\longrightarrow\;
+\text{expliquer}
+\;\longrightarrow\;
+\text{vérifier la cohérence}\\[0.15cm]
+\longrightarrow\;
+\text{orienter la décision humaine}
+\end{gathered}
+}
+\]
+
+Cette chaîne rend la sortie du modèle plus lisible et limite l'automatisation
+aux cas considérés comme les plus fiables dans l'expérimentation.
+
+\subsection{Perspectives}
+
+Plusieurs prolongements sont possibles :
+
+\begin{itemize}[leftmargin=1.5em]
+  \item intégrer les sports disponibles uniquement sous forme d'ECG avec une
+  détection validée des pics R ;
+  \item ajouter des signaux de mouvement, de vitesse ou d'accélération ;
+  \item construire un espace d'états hiérarchique qui conserve les
+  sous-phases propres à chaque sport ;
+  \item appliquer des méthodes d'explicabilité directement adaptées aux LSTM,
+  GRU et Transformers ;
+  \item enrichir le graphe avec des règles validées par un spécialiste du
+  sport ;
+  \item présenter les explications dans une interface permettant de consulter
+  l'état, la confiance, les variables principales et la décision HITL ;
+  \item calibrer les seuils selon le coût réel d'une erreur et la quantité de
+  travail humain acceptable ;
+  \item évaluer la compréhension des graphes et des explications auprès
+  d'entraîneurs, d'athlètes ou de professionnels de santé ;
+  \item valider le pipeline sur un corpus externe.
+\end{itemize}
+
+% Annexe
+
+\appendix
+
+\section{Principaux scripts du projet}
+
+\begin{table}[H]
+\centering
+\caption{Scripts principaux et rôle dans le pipeline.}
+\begin{tabularx}{\linewidth}{lX}
+\toprule
+\textbf{Script} & \textbf{Rôle} \\
+\midrule
+\texttt{explore\_dataset.py}
+& Exploration de l'arborescence, des champs MATLAB et des annotations. \\
+
+\texttt{deep\_learning\_run.py}
+& Comparaison RF, MLP, LSTM, GRU et Transformer sur RUN à six états. \\
+
+\texttt{deep\_learning\_multisport.py}
+& Construction du corpus commun et évaluation LOSO multi-sport. \\
+
+\texttt{feature\_distribution\_analysis.py}
+& Distributions des variables et projection PCA. \\
+
+\texttt{separability\_analysis.py}
+& ANOVA, score de Fisher, silhouette et classement des variables. \\
+
+\texttt{ablation\_sport\_inclusion.py}
+& Étude de l'effet de l'inclusion de SKA dans le train. \\
+
+\texttt{explainability\_kg.py}
+& SHAP, profils d'état, graphe de connaissances et cohérence sémantique. \\
+
+\texttt{explainability\_kg\_oof.py}
+& Explications et décisions HITL recalculées dans chaque pli LOSO. \\
+
+\texttt{hitl\_reliability\_analysis\_oof.py}
+& Analyse des catégories HITL et courbes risk--coverage. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% Bibliographie
+
+\newpage
+\begin{thebibliography}{99}
+
+\bibitem{linardatos2021}
+P.~Linardatos, V.~Papastefanopoulos et S.~Kotsiantis,
+``Explainable AI: A Review of Machine Learning Interpretability Methods'',
+2021.\\
+\url{https://www.mdpi.com/1099-4300/23/1/18}
+
+\bibitem{ribeiro2016}
+M.~T.~Ribeiro, S.~Singh et C.~Guestrin,
+``Why Should I Trust You?: Explaining the Predictions of Any Classifier'',
+2016.\\
+\url{https://arxiv.org/abs/1602.04938}
+
+\bibitem{lundberg2017}
+S.~M.~Lundberg et S.-I.~Lee,
+``A Unified Approach to Interpreting Model Predictions'',
+2017.\\
+\url{https://arxiv.org/abs/1705.07874}
+
+\bibitem{lundberg2019}
+S.~M.~Lundberg, G.~Erion, H.~Chen et al.,
+``Explainable AI for Trees: From Local Explanations to Global Understanding'',
+2019.\\
+\url{https://arxiv.org/abs/1905.04610}
+
+\bibitem{breiman2001}
+L.~Breiman,
+``Random Forests'',
+2001.\\
+\url{https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf}
+
+\bibitem{goodfellow2016}
+I.~Goodfellow, Y.~Bengio et A.~Courville,
+\emph{Deep Learning},
+2016.\\
+\url{https://www.deeplearningbook.org}
+
+\bibitem{cho2014}
+K.~Cho, B.~van Merriënboer, C.~Gulcehre et al.,
+``Learning Phrase Representations using RNN Encoder--Decoder for Statistical
+Machine Translation'',
+2014.\\
+\url{https://arxiv.org/abs/1406.1078}
+
+\bibitem{vaswani2017}
+A.~Vaswani, N.~Shazeer, N.~Parmar et al.,
+``Attention Is All You Need'',
+2017.\\
+\url{https://arxiv.org/abs/1706.03762}
+
+\bibitem{hogan2020}
+A.~Hogan, E.~Blomqvist, M.~Cochez et al.,
+``Knowledge Graphs'',
+2021.\\
+\url{https://arxiv.org/abs/2003.02320}
+
+\bibitem{rotmensch2017}
+M.~Rotmensch, Y.~Halpern, A.~Tlimat, S.~Horng et D.~Sontag,
+``Learning a Health Knowledge Graph from Electronic Medical Records'',
+2017.\\
+\url{https://www.nature.com/articles/s41598-017-05778-z}
+
+\bibitem{claudino2019}
+J.~G.~Claudino et al.,
+``Current Approaches to the Use of Artificial Intelligence for Injury Risk
+Assessment and Performance Prediction in Team Sports'',
+2019.\\
+\url{https://link.springer.com/article/10.1186/s40798-019-0202-3}
+
+\bibitem{sportdb2data}
+L.~Burattini, S.~Romagnoli, A.~Sbrollini, M.~Morettini, A.~Nocera,
+D.~Bondi, T.~Pietrangelo et V.~Verratti,
+\emph{Sport DB 2.0},
+2024.\\
+\url{https://data.mendeley.com/datasets/kzkjkt7mx2/2}
+
+\bibitem{sportdb2paper}
+S.~Romagnoli, A.~Sbrollini, A.~Nocera, M.~Morettini, D.~Bondi,
+T.~Pietrangelo, V.~Verratti et L.~Burattini,
+``Sport DB 2.0: A New Database of Data Acquired by Wearable and Portable
+Devices While Practicing Sport'',
+2023.\\
+\url{https://cinc.org/archives/2023/pdf/CinC2023-067.pdf}
+
+\bibitem{dehghani2019}
+A.~Dehghani, T.~Glatard et E.~Shihab,
+``Subject Cross Validation in Human Activity Recognition'',
+2019.\\
+\url{https://arxiv.org/abs/1904.02666}
+
+\bibitem{demsar2006}
+J.~Demšar,
+``Statistical Comparisons of Classifiers over Multiple Data Sets'',
+2006.\\
+\url{https://www.jmlr.org/papers/volume7/demsar06a/demsar06a.pdf}
+
+\bibitem{elgendi2014}
+M.~Elgendi,
+``Revisiting QRS Detection Methodologies for Portable, Wearable,
+Battery-Operated, and Wireless ECG Systems'',
+2014.\\
+\url{https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0084018}
+
+\bibitem{geifman2017}
+Y.~Geifman et R.~El-Yaniv,
+``Selective Classification for Deep Neural Networks'',
+2017.\\
+\url{https://arxiv.org/abs/1705.08500}
+
+\bibitem{kranzinger2025}
+S.~Kranzinger, C.~Halmich, D.~Hofer et C.~Kranzinger,
+``A Scoping Review of Explainable Artificial Intelligence in Sports Science'',
+2025.\\
+\url{https://link.springer.com/article/10.1007/s44163-025-00709-8}
+
+\bibitem{shen2025}
+J.~Shen, J.~Wu, H.~Liang et al.,
+``Physiological Signal Analysis Using Explainable Artificial Intelligence:
+A Systematic Review'',
+2025.\\
+\url{https://doi.org/10.1016/j.neucom.2024.128920}
+
+\bibitem{estrella2025}
+T.~Estrella et L.~Capdevila,
+``Identification of Athleticism and Sports Profiles Throughout Machine
+Learning Applied to Heart Rate Variability'',
+2025.\\
+\url{https://www.mdpi.com/2075-4663/13/2/30}
+
+\bibitem{lecue2020}
+F.~Lecue,
+``On the Role of Knowledge Graphs in Explainable AI'',
+2020.\\
+\url{https://www.semantic-web-journal.net/system/files/swj2198.pdf}
+
+\bibitem{wu2021}
+X.~Wu, L.~Xiao, Y.~Sun, J.~Zhang, T.~Ma et L.~He,
+``A Survey of Human-in-the-Loop for Machine Learning'',
+2021.\\
+\url{https://arxiv.org/abs/2108.00941}
+
+\bibitem{shlens2014}
+J.~Shlens,
+``A Tutorial on Principal Component Analysis'',
+2014.\\
+\url{https://arxiv.org/abs/1404.1100}
+
+\bibitem{rousseeuw1987}
+P.~J.~Rousseeuw,
+``Silhouettes: A Graphical Aid to the Interpretation and Validation of Cluster Analysis'',
+1987.\\
+\url{https://wis.kuleuven.be/stat/robust/papers/publications-1987/rousseeuw-silhouettes-jcam-sciencedirectopenarchiv.pdf}
+
+\bibitem{gu2012}
+Q.~Gu, Z.~Li et J.~Han,
+``Generalized Fisher Score for Feature Selection'',
+2012.\\
+\url{https://arxiv.org/abs/1202.3725}
+
+\bibitem{nistAnova}
+NIST/SEMATECH,
+``One-Way ANOVA Overview'',
+2013.\\
+\url{https://www.itl.nist.gov/div898/handbook/prc/section4/prc431.htm}
+
+\end{thebibliography}
+
+\end{document}

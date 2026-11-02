@@ -206,7 +206,7 @@ def build_oof_explanations(
         )
 
         model = make_model(
-            n_estimators=250
+            n_estimators=300
         )
 
         model.fit(

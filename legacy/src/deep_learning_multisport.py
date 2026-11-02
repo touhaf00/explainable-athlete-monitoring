@@ -46,10 +46,25 @@ LABEL_TO_ID = {name: idx for idx, name in enumerate(LABEL_NAMES)}
 
 CHANNEL_NAMES = ["HR", "BR", "RR"]
 
-ALLOWED_TRANSITIONS = {
-    0: [0, 1],
-    1: [1, 2],
-    2: [2],
+ALLOWED_TRANSITIONS_BY_SPORT = {
+    "RUN": {
+        0: [0, 1],
+        1: [1, 2],
+        2: [2],
+    },
+    "CYC": {
+        0: [0, 1],
+        1: [1, 2],
+        2: [2],
+    },
+    "TRE": {
+        1: [1],
+    },
+    "SKA": {
+        0: [0, 1],
+        1: [1, 2, 0],
+        2: [2, 1, 0],
+    },
 }
 
 SPORTS_CONFIG = {
@@ -82,15 +97,17 @@ SPORTS_CONFIG = {
         },
     },
     "SKA": {
-        "encoding": "latin-1",
-        "has_br": False,
-        "state_map": {
-            "resting": "S0_Rest",
-            "warm-up": "S1_Effort",
-            "warm up": "S1_Effort",
-            "laps": "S1_Effort",
-            "20 laps": "S1_Effort",
-            "recovery": "S2_Recovery",
+    "encoding": "latin-1",
+    "has_br": False,
+    "state_map": {
+        "resting": "S0_Rest",
+        "warm-up": "S1_Effort",
+        "warm up": "S1_Effort",
+        "high intensity": "S1_Effort",
+        "low intensity": "S1_Effort",
+        "laps": "S1_Effort",
+        "20 laps": "S1_Effort",
+        "recovery": "S2_Recovery",
         },
     },
 }
@@ -113,33 +130,51 @@ def parse_trnote(path, encoding, state_map):
         with open(path, "r", encoding=encoding, errors="replace") as file:
             text = file.read()
     except Exception:
-        return {}
+        return []
 
     pattern = re.compile(
-        r"([A-Za-z0-9\s\-_]+?)\s*:\s*from\s+"
+        r"([A-Za-z0-9\s\-_+()]+?)\s*:\s*from\s+"
         r"(\d{1,2}:\d{2}:\d{2}(?:\.\d+)?)\s+to\s+"
         r"(\d{1,2}:\d{2}:\d{2}(?:\.\d+)?)",
         re.IGNORECASE,
     )
 
-    segments = {}
+    segments = []
 
     for match in pattern.finditer(text):
-        raw_label = match.group(1).strip().lower()
+        raw_label = match.group(1).strip()
+        normalized_label = raw_label.lower()
+
         start = hms_to_seconds(match.group(2))
         end = hms_to_seconds(match.group(3))
 
-        for key, unified_label in state_map.items():
-            if key in raw_label:
-                if unified_label not in segments:
-                    segments[unified_label] = (start, end)
-                else:
-                    old_start, old_end = segments[unified_label]
-                    segments[unified_label] = (
-                        min(old_start, start),
-                        max(old_end, end),
-                    )
-                break
+        if end <= start:
+            continue
+
+        matched_states = {
+            unified_label
+            for key, unified_label in state_map.items()
+            if key in normalized_label
+        }
+
+        # Une annotation doit correspondre à un seul état.
+        # Exemple problématique :
+        # "Recovery + 6 laps"
+        # correspond à la fois à Recovery et Effort.
+        if len(matched_states) == 1:
+            segments.append({
+                "state": matched_states.pop(),
+                "raw_state": raw_label,
+                "start": start,
+                "end": end,
+            })
+
+    segments.sort(
+        key=lambda item: (
+            item["start"],
+            item["end"],
+        )
+    )
 
     return segments
 
@@ -211,7 +246,10 @@ def load_multisport_windows():
                     skipped_files.append((sport, relative_subject, "no parsed segment"))
                     continue
 
-                total_duration = max(end for _, end in segments.values())
+                total_duration = max(
+                    segment["end"]
+                    for segment in segments
+                )
 
                 if total_duration <= 0:
                     skipped_files.append((sport, relative_subject, "invalid duration"))
@@ -219,9 +257,14 @@ def load_multisport_windows():
 
                 samples_per_second = len(hr) / total_duration
 
-                for state_name, (start_sec, end_sec) in segments.items():
+                for segment in segments:
+                    state_name = segment["state"]
+                    start_sec = segment["start"]
+                    end_sec = segment["end"]
+
                     start = int(start_sec * samples_per_second)
                     end = int(end_sec * samples_per_second)
+
                     label = LABEL_TO_ID[state_name]
 
                     for i in range(start, end - WINDOW_SIZE, STRIDE):
@@ -255,6 +298,19 @@ def load_multisport_windows():
                             "sport": sport,
                             "subject": relative_subject,
                             "state": state_name,
+
+                            "raw_state": segment["raw_state"],
+
+                            "segment_start_sec": start_sec,
+                            "segment_end_sec": end_sec,
+
+                            "window_start_sample": i,
+                            "window_end_sample": j,
+
+                            "samples_per_second": samples_per_second,
+
+                            "window_start_sec": i / samples_per_second,
+                            "window_end_sec": j / samples_per_second,
                         })
 
                         windows_per_sport[sport] += 1
@@ -507,22 +563,42 @@ def train_torch_model(model, x_train, y_train, x_test, num_classes):
     return predictions, confidence
 
 
-def temporal_consistency_score(predictions, groups):
+def temporal_consistency_score(predictions, groups, sports):
     scores = np.ones(len(predictions), dtype=float)
 
     for group in sorted(set(groups)):
         indexes = np.where(groups == group)[0]
+
         group_predictions = predictions[indexes]
+
+        sport = str(sports[indexes[0]])
+
+        allowed_transitions = ALLOWED_TRANSITIONS_BY_SPORT.get(
+            sport,
+            {},
+        )
 
         for i in range(1, len(group_predictions)):
             previous_state = int(group_predictions[i - 1])
             current_state = int(group_predictions[i])
 
-            if current_state in ALLOWED_TRANSITIONS.get(previous_state, []):
+            allowed = allowed_transitions.get(
+                previous_state,
+                [previous_state],
+            )
+
+            if current_state in allowed:
                 scores[indexes[i]] = 1.0
             else:
-                distance = abs(current_state - previous_state)
-                scores[indexes[i]] = 0.5 if distance <= 1 else 0.0
+                distance = abs(
+                    current_state - previous_state
+                )
+
+                scores[indexes[i]] = (
+                    0.5
+                    if distance <= 1
+                    else 0.0
+                )
 
     return scores
 
@@ -751,7 +827,11 @@ def build_results_table(y, groups, sports, meta, predictions, confidences):
     rows = []
 
     for model_name, pred in predictions.items():
-        temp_scores = temporal_consistency_score(pred, groups)
+        temp_scores = temporal_consistency_score(
+            pred,
+            groups,
+            sports,
+        )
 
         for i in range(len(y)):
             confidence = float(confidences[model_name][i])
@@ -822,6 +902,46 @@ def save_window_features(x_stat, sports, groups, meta):
             "sport": sports[i],
             "subject": groups[i],
             "true_state": meta[i]["state"],
+
+            "raw_state": meta[i].get(
+                "raw_state",
+                "",
+            ),
+
+            "segment_start_sec": meta[i].get(
+                "segment_start_sec",
+                np.nan,
+            ),
+
+            "segment_end_sec": meta[i].get(
+                "segment_end_sec",
+                np.nan,
+            ),
+
+            "window_start_sample": meta[i].get(
+                "window_start_sample",
+                np.nan,
+            ),
+
+            "window_end_sample": meta[i].get(
+                "window_end_sample",
+                np.nan,
+            ),
+
+            "samples_per_second": meta[i].get(
+                "samples_per_second",
+                np.nan,
+            ),
+
+            "window_start_sec": meta[i].get(
+                "window_start_sec",
+                np.nan,
+            ),
+
+            "window_end_sec": meta[i].get(
+                "window_end_sec",
+                np.nan,
+            ),
         }
 
         for name, value in zip(feature_names, values):

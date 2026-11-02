@@ -8,19 +8,18 @@ env/
 
 .idea/
 .vscode/
-
 .DS_Store
 
 SportDB2/
 
-outputs/
-out/
+outputs_current/
+results/
+legacy/results/
 
-*.png
-*.jpg
-*.jpeg
-
-*.csv
+.ipynb_checkpoints/
+.pytest_cache/
+.coverage
+htmlcov/
 
 *.aux
 *.bbl
@@ -35,5 +34,3 @@ out/
 *.toc
 *.lof
 *.lot
-
-.ipynb_checkpoints/
