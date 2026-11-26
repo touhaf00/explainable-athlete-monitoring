@@ -489,3 +489,890 @@
   height: 44px;
   object-fit: contain;
 }
+/* RHYVA V1.1 - Physiological charts */
+
+.physio-stack {
+  display: grid;
+  gap: 20px;
+  margin: 20px 0;
+  min-width: 0;
+}
+
+.physio-chart {
+  padding: 18px;
+  border: 1px solid #e5eaf0;
+  border-radius: 16px;
+  background: #fff;
+  min-width: 0;
+}
+
+.physio-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.physio-heading h3 {
+  margin: 0 0 5px;
+  font-size: 15px;
+  color: #26374c;
+}
+
+.physio-heading small {
+  font-size: 11px;
+  color: #8491a3;
+}
+
+.physio-value {
+  font-size: 28px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.physio-value small {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.physio-reading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.physio-reading span {
+  padding: 5px 9px;
+  background: #f4f6f9;
+  color: #64748b;
+  font-size: 10px;
+  border-radius: 6px;
+}
+
+.physio-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.physio-axis {
+  fill: #8491a3;
+  font-size: 11px;
+}
+
+.physio-interaction {
+  cursor: crosshair;
+}
+
+.physio-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+
+.physio-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #64748b;
+  font-size: 10px;
+}
+
+.physio-legend i {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+}
+
+.physio-reference {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #8491a3;
+  font-size: 10px;
+  margin: 12px 0;
+}
+
+.physio-reference span {
+  width: 23px;
+  border-top: 2px dashed #8293a8;
+  flex-shrink: 0;
+}
+
+.physio-slider {
+  width: 100%;
+  margin: 14px 0 6px;
+  cursor: pointer;
+}
+
+.physio-help {
+  display: block;
+  color: #8491a3;
+  font-size: 10px;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .physio-chart {
+    padding: 12px;
+  }
+
+  .physio-value {
+    font-size: 24px;
+  }
+
+  .physio-legend {
+    gap: 8px;
+  }
+}
+
+/* RHYVA V1.1 - Explainability */
+
+.xai-panel {
+  margin: 24px 0;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e4eaf1;
+  border-radius: 14px;
+}
+
+.xai-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #548bcb;
+}
+
+.xai-heading h3 {
+  margin: 0;
+  color: #26374c;
+  font-size: 14px;
+}
+
+.xai-description {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.7;
+  margin: 12px 0;
+}
+
+.xai-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.xai-metric {
+  background: #fff;
+  padding: 12px 9px;
+  border: 1px solid #e5eaf0;
+  border-radius: 10px;
+}
+
+.xai-metric small {
+  display: block;
+  font-size: 10px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.xai-metric strong {
+  color: #26374c;
+  font-size: 14px;
+}
+
+.xai-confidence {
+  margin: 18px 0;
+}
+
+.xai-confidence-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: #526274;
+}
+
+.xai-confidence-heading strong {
+  font-size: 20px;
+  color: #548bcb;
+}
+
+.xai-progress {
+  height: 8px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 10px 0;
+  background: #e3e9f1;
+}
+
+.xai-progress > div {
+  height: 100%;
+  background: #548bcb;
+  border-radius: 20px;
+  transition: width .3s ease;
+}
+
+.xai-confidence small {
+  font-size: 10px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.xai-disclaimer {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px;
+  background: #edf3fa;
+  border-radius: 8px;
+  font-size: 10px;
+  line-height: 1.6;
+  color: #526b8a;
+}
+
+.xai-disclaimer svg {
+  flex-shrink: 0;
+}
+
+.physio-axis {
+  font-size: 13px;
+  fill: #64748b;
+}
+
+/* RHYVA V1.1 - Human-in-the-Loop */
+
+.hitl-panel {
+  margin-top: 24px;
+}
+
+.hitl-panel h3 {
+  margin: 0 0 8px;
+  color: #26374c;
+  font-size: 16px;
+}
+
+.hitl-panel > p {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.hitl-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  gap: 12px;
+  padding: 13px;
+  margin-bottom: 9px;
+  border: 1px solid #dce4ed;
+  border-radius: 11px;
+  background: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .2s, border-color .2s;
+}
+
+.hitl-option svg {
+  flex-shrink: 0;
+}
+
+.hitl-option strong {
+  display: block;
+  font-size: 12px;
+  color: #26374c;
+}
+
+.hitl-option small {
+  display: block;
+  margin-top: 5px;
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.hitl-agree {
+  color: #328568;
+}
+
+.hitl-check {
+  color: #ba863d;
+}
+
+.hitl-disagree {
+  color: #548bcb;
+}
+
+.hitl-agree.selected,
+.hitl-agree:hover {
+  background: #edf8f2;
+  border-color: #6db494;
+}
+
+.hitl-check.selected,
+.hitl-check:hover {
+  background: #fff7e9;
+  border-color: #d6a258;
+}
+
+.hitl-disagree.selected,
+.hitl-disagree:hover {
+  background: #edf3fa;
+  border-color: #83a9d4;
+}
+
+.hitl-option:focus-visible {
+  outline: 2px solid #548bcb;
+  outline-offset: 3px;
+}
+
+.hitl-panel .hitl-feedback {
+  background: #edf8f2;
+  color: #328568;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 11px;
+}
+
+.hitl-help {
+  display: block;
+  margin-top: 14px;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* RHYVA - Adaptive learning review */
+
+.adaptive-panel {
+  margin: 20px 0;
+  padding: 16px;
+  border: 1px solid #cddded;
+  background: #f7faff;
+  border-radius: 14px;
+  min-width: 0;
+}
+
+.adaptive-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #548bcb;
+}
+
+.adaptive-heading h3 {
+  margin: 0;
+  font-size: 15px;
+  color: #26374c;
+}
+
+.adaptive-caption {
+  display: block;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #64748b;
+  margin-top: 10px;
+}
+
+.adaptive-panel p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: #64748b;
+}
+
+.adaptive-panel label {
+  display: block;
+  color: #26374c;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 15px 0 7px;
+}
+
+.adaptive-panel select,
+.adaptive-panel textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d5dfeb;
+  border-radius: 9px;
+  padding: 11px;
+  background: white;
+  color: #26374c;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.adaptive-panel textarea {
+  resize: vertical;
+}
+
+.adaptive-button,
+.adaptive-choice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 9px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.adaptive-button {
+  color: white;
+  background: #548bcb;
+  border: 1px solid #548bcb;
+}
+
+.adaptive-choice {
+  background: white;
+  color: #365d8c;
+  border: 1px solid #cddded;
+}
+
+.adaptive-choice:hover {
+  background: #edf3fa;
+}
+
+.adaptive-button:disabled,
+.adaptive-choice:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.adaptive-report {
+  margin-top: 18px;
+  padding: 14px;
+  background: white;
+  border: 1px solid #dce4ed;
+  border-radius: 11px;
+  overflow-wrap: anywhere;
+}
+
+.adaptive-report h4 {
+  font-size: 13px;
+  color: #26374c;
+  margin: 0 0 12px;
+}
+
+.adaptive-report small {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.adaptive-report ul {
+  padding-left: 18px;
+  margin: 15px 0 20px;
+}
+
+.adaptive-report li {
+  font-size: 12px;
+  line-height: 1.7;
+  color: #526274;
+  margin-bottom: 9px;
+}
+
+.adaptive-result {
+  background: #edf3fa;
+  color: #365d8c;
+  border-radius: 9px;
+  padding: 12px;
+  font-size: 12px;
+}
+
+.adaptive-history {
+  margin-top: 18px;
+}
+
+.adaptive-history summary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #365d8c;
+}
+
+.adaptive-event {
+  padding: 11px;
+  background: white;
+  border: 1px solid #e0e7ef;
+  border-radius: 8px;
+  margin-top: 9px;
+  overflow-wrap: anywhere;
+}
+
+.adaptive-event strong,
+.adaptive-event small {
+  display: block;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.adaptive-event small {
+  color: #64748b;
+}
+
+.adaptive-panel button:focus-visible,
+.adaptive-panel select:focus-visible,
+.adaptive-panel textarea:focus-visible {
+  outline: 2px solid #548bcb;
+  outline-offset: 3px;
+}
+
+/* RHYVA - Learning Center */
+
+.learning-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.learning-grid .metric-card {
+  min-width: 0;
+}
+
+.learning-panel {
+  margin-bottom: 24px;
+}
+
+.learning-queue {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.learning-queue > div {
+  padding: 18px;
+  background: #f5f8fc;
+  border: 1px solid #e1e8f0;
+  border-radius: 12px;
+}
+
+.learning-queue small {
+  display: block;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+.learning-queue strong {
+  display: block;
+  margin-top: 9px;
+  font-size: 28px;
+  color: #26374c;
+}
+
+.learning-notice {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.learning-pipeline {
+  margin: 24px 0 0;
+}
+
+.learning-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 14px 0;
+}
+
+.learning-step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #edf1f6;
+  color: #8491a3;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.learning-step-number.available {
+  background: #e3f3ea;
+  color: #328568;
+}
+
+.learning-step strong {
+  display: block;
+  color: #26374c;
+  font-size: 13px;
+}
+
+.learning-step small {
+  display: block;
+  margin-top: 4px;
+  color: #8491a3;
+  font-size: 11px;
+}
+
+.learning-event {
+  margin-top: 14px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e1e7ef;
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+
+.learning-event-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.learning-event-header > strong {
+  font-size: 14px;
+  color: #26374c;
+}
+
+.learning-tag {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  background: #edf3fa;
+  color: #365d8c;
+}
+
+.learning-tag.confirmed {
+  background: #e5f4ec;
+  color: #328568;
+}
+
+.learning-tag.pending,
+.learning-tag.insufficient {
+  background: #fff3df;
+  color: #946a2f;
+}
+
+.learning-event p,
+.learning-event li {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.learning-event summary {
+  color: #365d8c;
+  font-size: 12px;
+  cursor: pointer;
+  margin: 12px 0;
+}
+
+.learning-correction {
+  padding: 12px;
+  background: #edf3fa;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #365d8c;
+}
+
+.learning-correction p {
+  margin-bottom: 0;
+}
+
+.learning-link {
+  padding: 8px 0;
+  background: transparent;
+  border: 0;
+  color: #365d8c;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.learning-empty {
+  padding: 40px 15px;
+  text-align: center;
+  color: #8491a3;
+}
+
+.learning-empty strong {
+  display: block;
+  margin-top: 12px;
+  color: #26374c;
+}
+
+.learning-empty p {
+  font-size: 12px;
+}
+
+.learning-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 16px;
+  margin-top: 10px;
+  background: #fff;
+  border: 1px solid #e4bdbd;
+  color: #ac5353;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.learning-reset:hover {
+  background: #fff3f3;
+}
+
+@media (max-width: 1100px) {
+  .learning-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .learning-grid {
+    gap: 10px;
+  }
+
+  .learning-queue {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* RHYVA — Politique HITL scientifique */
+
+.status-check {
+  background: #fff1d9;
+  color: #a97720;
+}
+
+.hitl-overview {
+  margin-bottom: 24px;
+}
+
+.hitl-distribution {
+  display: flex;
+  height: 15px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #eef2f5;
+  margin: 18px 0;
+}
+
+.hitl-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.hitl-summary-card {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #e1e7ec;
+  border-radius: 14px;
+  padding: 16px;
+  color: #40596d;
+  font: inherit;
+  cursor: pointer;
+}
+
+.hitl-summary-card strong {
+  font-size: 30px;
+}
+
+.hitl-summary-card:hover:not(:disabled) {
+  border-color: #ce806e;
+  background: #fcfaf8;
+}
+
+.hitl-summary-card:disabled {
+  cursor: default;
+  opacity: .55;
+}
+
+.hitl-example-link {
+  font-size: 12px;
+  color: #548bcb;
+  font-weight: 600;
+}
+
+.hitl-state-card {
+  padding: 15px;
+  border-radius: 12px;
+  margin: 15px 0;
+}
+
+.hitl-state-card strong {
+  font-size: 20px;
+}
+
+.hitl-state-card p {
+  margin: 6px 0 0;
+  font-size: 13px;
+}
+
+.hitl-state-accept,
+.hitl-accepted-message {
+  color: #297b59;
+  background: #e6f4ec;
+}
+
+.hitl-state-check {
+  color: #a97720;
+  background: #fff1d9;
+}
+
+.hitl-state-review {
+  color: #b94e4e;
+  background: #fbe4e4;
+}
+
+.hitl-accepted-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.hitl-accepted-message > svg {
+  flex-shrink: 0;
+}
+
+.hitl-accepted-message p {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  .hitl-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
