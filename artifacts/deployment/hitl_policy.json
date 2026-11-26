@@ -1,0 +1,27 @@
+{
+  "RUN": {
+    "accept": 0.9111188017483479,
+    "check": 0.19732187968674084,
+    "source": "sport"
+  },
+  "CYC": {
+    "accept": 0.785567623871155,
+    "check": 0.18801892859797567,
+    "source": "sport"
+  },
+  "AMF": {
+    "accept": "Infinity",
+    "check": 0.6658705108637248,
+    "source": "sport"
+  },
+  "SOC": {
+    "accept": 0.9305721254506062,
+    "check": 0.4600398471734755,
+    "source": "global_fallback"
+  },
+  "OTHER": {
+    "accept": 0.9305721254506062,
+    "check": 0.4600398471734755,
+    "source": "global_fallback"
+  }
+}

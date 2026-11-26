@@ -1,0 +1,55 @@
+{
+  "baseline_tag": "baseline-v1.0",
+  "baseline_commit": "6db9dd951b3c81f0cae3fc3334b708c6bbd29cc8",
+  "mode": "hr_br",
+  "feature_set": "personalized_14",
+  "features": [
+    "mean_HR",
+    "std_HR",
+    "max_HR",
+    "mean_BR",
+    "std_BR",
+    "max_BR",
+    "slope_HR_per_sec",
+    "slope_BR_per_sec",
+    "delta_HR",
+    "delta_BR",
+    "mean_HR_delta_cal",
+    "mean_BR_delta_cal",
+    "mean_HR_ratio_cal",
+    "mean_BR_ratio_cal"
+  ],
+  "n_features": 14,
+  "n_windows": 9166,
+  "n_subjects": 38,
+  "classes": {
+    "0": "Rest",
+    "1": "Effort",
+    "2": "Recovery"
+  },
+  "model": {
+    "type": "RandomForestClassifier",
+    "n_estimators": 300,
+    "max_depth": 8,
+    "min_samples_leaf": 3,
+    "class_weight": "balanced",
+    "random_state": 42
+  },
+  "confidence_calibration": {
+    "method": "state-conditioned Platt calibration",
+    "source": "LOSO OOF predictions",
+    "minimum_state_samples": 100,
+    "state_sources": {
+      "0": "state",
+      "1": "state",
+      "2": "state"
+    },
+    "state_counts": {
+      "0": 1370,
+      "1": 6094,
+      "2": 1702
+    }
+  },
+  "oof_source": "results/baseline/xai_oof_predictions.csv",
+  "oof_sha256": "a62cf65699989e9b63fb66c323af19e4f58b993591782676a169ea6ebdd5cc7e"
+}
