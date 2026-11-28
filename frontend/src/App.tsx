@@ -37,6 +37,7 @@ import {
 } from "./utils/coachReport";
 import PhysiologicalChart from "./components/PhysiologicalChart";
 import AdaptiveReview from "./components/AdaptiveReview";
+import ExplainabilityPanel from "./components/ExplainabilityPanel";
 
 import { usePersistentState } from "./hooks/usePersistentState";
 
@@ -883,6 +884,12 @@ function App() {
 
                         {currentReview && prediction && (
                           <div className="rv-review-box">
+                            <ExplainabilityPanel
+                              athlete={currentReview}
+                              activeIndex={activeIndex}
+                              predictionOverride={prediction}
+                            />
+
                             {prediction.hitlDecision === "Accept" &&
                               !decisions[currentReview.id] && (
                               <button

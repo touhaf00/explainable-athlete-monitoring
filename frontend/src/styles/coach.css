@@ -907,3 +907,117 @@
     transform: rotate(360deg);
   }
 }
+
+
+/* RHYVA — Compréhension sportive */
+
+.rv-xai-panel {
+  background: #fff;
+  border: 1px solid #dce6ed;
+  border-radius: 14px;
+  padding: 18px;
+  margin: 16px 0 20px;
+  color: #244459;
+}
+
+.rv-xai-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.rv-xai-heading svg {
+  color: #5089bf;
+  flex-shrink: 0;
+}
+
+.rv-xai-heading h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.rv-xai-heading p {
+  margin: 0;
+  font-size: 12px;
+  color: #70869a;
+}
+
+.rv-xai-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  background: #f4f7fa;
+  padding: 14px;
+  border-radius: 10px;
+}
+
+.rv-xai-metric span {
+  font-size: 12px;
+  color: #637d91;
+}
+
+.rv-xai-metric strong {
+  font-size: 21px;
+}
+
+.rv-xai-panel h4 {
+  margin: 20px 0 12px;
+  font-size: 14px;
+}
+
+.rv-sport-observations {
+  display: flex;
+  flex-direction: column;
+}
+
+.rv-sport-observation {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+}
+
+.rv-sport-observation + .rv-sport-observation {
+  border-top: 1px solid #e8eef3;
+}
+
+.rv-sport-observation svg {
+  flex-shrink: 0;
+}
+
+.rv-sport-observation strong {
+  font-size: 14px;
+}
+
+.rv-sport-observation p {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 5px 0 0;
+  color: #526c80;
+}
+
+.rv-xai-notice {
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid #e9dcc5;
+  background: #fdf8ef;
+  border-radius: 10px;
+}
+
+.rv-xai-notice strong {
+  font-size: 13px;
+  color: #946b32;
+}
+
+.rv-xai-notice p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .rv-xai-panel {
+    padding: 12px;
+  }
+}
